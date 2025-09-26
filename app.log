@@ -1,0 +1,201 @@
+2025-09-22 15:17:34,108 - INFO - РЈСЃРїРµС€РЅРѕРµ РїРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р‘Р”
+2025-09-22 15:17:34,224 - INFO - РЈСЃРїРµС€РЅРѕРµ РїРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р‘Р”
+2025-09-22 15:17:34,270 - INFO - РЈСЃРїРµС€РЅРѕРµ РїРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р‘Р”
+2025-09-22 15:17:34,313 - INFO - РЈСЃРїРµС€РЅРѕРµ РїРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р‘Р”
+2025-09-22 15:17:34,356 - INFO - РЈСЃРїРµС€РЅРѕРµ РїРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р‘Р”
+2025-09-22 15:17:34,439 - INFO - РЈСЃРїРµС€РЅРѕРµ РїРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р‘Р”
+2025-09-22 15:17:34,463 - INFO - РџСЂРёР»РѕР¶РµРЅРёРµ Р·Р°РїСѓС‰РµРЅРѕ
+2025-09-22 15:17:55,054 - INFO - РЈСЃРїРµС€РЅРѕРµ РїРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р‘Р”
+2025-09-22 15:17:55,090 - INFO - РЎС…РµРјР° Р‘Р” СѓСЃРїРµС€РЅРѕ СЃРѕР·РґР°РЅР°/РїСЂРѕРІРµСЂРµРЅР°
+2025-09-22 15:17:57,313 - INFO - РЈСЃРїРµС€РЅРѕРµ РїРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р‘Р”
+2025-09-22 15:17:57,387 - INFO - РЈСЃРїРµС€РЅРѕРµ РїРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р‘Р”
+2025-09-22 15:17:57,439 - INFO - РЈСЃРїРµС€РЅРѕРµ РїРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р‘Р”
+2025-09-22 15:17:57,499 - INFO - РЈСЃРїРµС€РЅРѕРµ РїРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р‘Р”
+2025-09-22 15:17:57,622 - INFO - РЈСЃРїРµС€РЅРѕРµ РїРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р‘Р”
+2025-09-22 15:19:11,434 - INFO - РЈСЃРїРµС€РЅРѕРµ РїРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р‘Р”
+2025-09-22 15:19:11,510 - INFO - РЈСЃРїРµС€РЅРѕРµ РїРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р‘Р”
+2025-09-22 15:19:11,570 - INFO - РЈСЃРїРµС€РЅРѕРµ РїРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р‘Р”
+2025-09-22 15:24:26,248 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:24:26,249 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ С‚РѕС‡РµРє: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:24:26,291 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:24:26,292 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ СЃРѕС‚СЂСѓРґРЅРёРєРѕРІ: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:24:26,333 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:24:26,333 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ РїСЂРѕРґСѓРєС‚РѕРІ: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:24:26,373 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:24:26,373 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ С„РёРЅР°РЅСЃРѕРІ: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:24:26,413 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:24:26,413 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ РїРѕСЃС‚Р°РІРѕРє: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:24:26,499 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:24:26,499 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ С‚РѕС‡РµРє: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:24:26,537 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:24:26,537 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ СЃРѕС‚СЂСѓРґРЅРёРєРѕРІ: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:24:26,576 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:24:26,577 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ РїСЂРѕРґСѓРєС‚РѕРІ: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:24:26,613 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:24:26,614 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ С„РёРЅР°РЅСЃРѕРІ: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:24:26,650 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:24:26,650 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ РїРѕСЃС‚Р°РІРѕРє: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:24:26,671 - INFO - РџСЂРёР»РѕР¶РµРЅРёРµ Р·Р°РїСѓС‰РµРЅРѕ
+2025-09-22 15:28:50,858 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:28:50,859 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ С‚РѕС‡РµРє: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:28:51,001 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:28:51,001 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ СЃРѕС‚СЂСѓРґРЅРёРєРѕРІ: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:28:51,038 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:28:51,038 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ РїСЂРѕРґСѓРєС‚РѕРІ: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:28:51,076 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:28:51,077 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ С„РёРЅР°РЅСЃРѕРІ: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:28:51,114 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:28:51,115 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ РїРѕСЃС‚Р°РІРѕРє: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:28:51,199 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:28:51,200 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ С‚РѕС‡РµРє: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:28:51,240 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:28:51,240 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ СЃРѕС‚СЂСѓРґРЅРёРєРѕРІ: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:28:51,279 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:28:51,280 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ РїСЂРѕРґСѓРєС‚РѕРІ: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:28:51,319 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:28:51,320 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ С„РёРЅР°РЅСЃРѕРІ: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:28:51,356 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:28:51,357 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ РїРѕСЃС‚Р°РІРѕРє: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:28:51,379 - INFO - РџСЂРёР»РѕР¶РµРЅРёРµ Р·Р°РїСѓС‰РµРЅРѕ
+2025-09-22 15:30:24,086 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:30:24,086 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ С‚РѕС‡РµРє: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:30:24,124 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:30:24,124 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ СЃРѕС‚СЂСѓРґРЅРёРєРѕРІ: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:30:24,161 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:30:24,162 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ РїСЂРѕРґСѓРєС‚РѕРІ: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:30:24,201 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:30:24,201 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ С„РёРЅР°РЅСЃРѕРІ: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:30:24,343 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:30:24,343 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ РїРѕСЃС‚Р°РІРѕРє: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:30:24,426 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:30:24,426 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ С‚РѕС‡РµРє: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:30:24,464 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:30:24,464 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ СЃРѕС‚СЂСѓРґРЅРёРєРѕРІ: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:30:24,503 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:30:24,503 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ РїСЂРѕРґСѓРєС‚РѕРІ: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:30:24,543 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:30:24,543 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ С„РёРЅР°РЅСЃРѕРІ: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:30:24,582 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:30:24,582 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ РїРѕСЃС‚Р°РІРѕРє: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:30:24,606 - INFO - РџСЂРёР»РѕР¶РµРЅРёРµ Р·Р°РїСѓС‰РµРЅРѕ
+2025-09-22 15:31:31,343 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:31:31,344 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ С‚РѕС‡РµРє: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:31:31,382 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:31:31,382 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ СЃРѕС‚СЂСѓРґРЅРёРєРѕРІ: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:31:31,420 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:31:31,421 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ РїСЂРѕРґСѓРєС‚РѕРІ: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:31:31,458 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:31:31,458 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ С„РёРЅР°РЅСЃРѕРІ: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:31:31,495 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:31:31,495 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ РїРѕСЃС‚Р°РІРѕРє: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:31:31,578 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:31:31,578 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ С‚РѕС‡РµРє: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:31:31,615 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:31:31,615 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ СЃРѕС‚СЂСѓРґРЅРёРєРѕРІ: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:31:31,652 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:31:31,652 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ РїСЂРѕРґСѓРєС‚РѕРІ: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:31:31,688 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:31:31,689 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ С„РёРЅР°РЅСЃРѕРІ: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:31:31,726 - ERROR - РћС€РёР±РєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:31:31,726 - ERROR - РћС€РёР±РєР° РїРѕР»СѓС‡РµРЅРёСЏ РїРѕСЃС‚Р°РІРѕРє: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-22 15:31:31,751 - INFO - РџСЂРёР»РѕР¶РµРЅРёРµ Р·Р°РїСѓС‰РµРЅРѕ
+2025-09-23 12:01:04,665 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-23 12:01:17,856 - INFO - Успешное подключение к БД
+2025-09-23 12:01:21,793 - INFO - Параметры БД загружены из окружения
+2025-09-23 12:01:34,110 - INFO - Успешное подключение к БД
+2025-09-23 12:02:13,252 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-23 12:02:40,765 - INFO - Успешное подключение к БД
+2025-09-23 12:07:18,182 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-23 12:07:27,613 - INFO - Успешное подключение к БД
+2025-09-23 12:11:14,533 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-23 12:11:21,151 - INFO - Успешное подключение к БД
+2025-09-23 12:11:25,008 - INFO - Параметры БД загружены из окружения
+2025-09-23 12:11:29,048 - ERROR - Ошибка подключения к БД: connection to server at "localhost" (::1), port 5432 failed: fe_sendauth: no password supplied
+
+2025-09-23 12:11:49,962 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-23 12:14:05,412 - INFO - Успешное подключение к БД
+2025-09-23 12:16:16,294 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-23 12:16:37,777 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-23 12:16:58,509 - INFO - Успешное подключение к БД
+2025-09-23 12:17:05,787 - INFO - Таблицы успешно пересозданы
+2025-09-23 12:17:09,886 - INFO - Параметры БД загружены из окружения
+2025-09-23 12:21:07,996 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-23 12:21:14,805 - INFO - Успешное подключение к БД
+2025-09-23 12:21:15,326 - INFO - Параметры БД загружены из окружения
+2025-09-24 09:23:35,756 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-24 09:24:29,400 - INFO - Успешное подключение к БД
+2025-09-24 09:24:30,651 - INFO - Параметры БД загружены из окружения
+2025-09-24 09:24:57,436 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-24 09:25:10,405 - INFO - Успешное подключение к БД
+2025-09-24 09:25:12,106 - INFO - Параметры БД загружены из окружения
+2025-09-24 09:28:43,608 - INFO - Добавлена точка: г.Москва, ул. Щавелевая, д. 52
+2025-09-24 09:32:25,304 - INFO - Добавлен сотрудник: Машутерова Маша Машева
+2025-09-24 09:50:27,190 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-24 09:50:34,847 - INFO - Успешное подключение к БД
+2025-09-24 09:59:16,095 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-24 09:59:22,035 - INFO - Успешное подключение к БД
+2025-09-24 10:01:33,992 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-24 10:01:39,774 - INFO - Успешное подключение к БД
+2025-09-24 10:03:23,225 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-24 10:04:15,276 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-24 10:04:25,654 - INFO - Успешное подключение к БД
+2025-09-24 10:07:38,855 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-24 10:07:47,863 - INFO - Успешное подключение к БД
+2025-09-24 10:07:57,413 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-24 10:08:04,269 - INFO - Успешное подключение к БД
+2025-09-24 10:08:08,344 - ERROR - Ошибка подключения к БД: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-24 10:08:20,612 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-24 10:08:25,217 - ERROR - Ошибка подключения к БД: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-24 10:19:27,386 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-24 10:19:39,678 - INFO - Успешное подключение к БД
+2025-09-24 10:19:41,313 - INFO - Параметры БД загружены из окружения
+2025-09-24 10:20:15,217 - INFO - Параметры БД загружены из окружения
+2025-09-24 10:20:39,547 - INFO - Таблицы успешно пересозданы
+2025-09-24 10:35:54,692 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-24 10:45:53,810 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-24 10:45:56,735 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-24 10:46:05,305 - INFO - Успешное подключение к БД
+2025-09-24 10:46:17,547 - INFO - Тестовые данные добавлены
+2025-09-24 10:46:46,236 - INFO - Успешное подключение к БД
+2025-09-24 10:46:48,140 - INFO - Таблицы успешно пересозданы
+2025-09-24 10:47:11,428 - INFO - Добавлена точка: хуй
+2025-09-24 10:47:53,228 - INFO - Добавлен сотрудник: МАШУТЕР МАША ЩАВЕЛЕВНА
+2025-09-24 10:48:11,189 - INFO - Тестовые данные добавлены
+2025-09-24 10:48:31,802 - INFO - Таблицы успешно пересозданы
+2025-09-24 10:48:37,148 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-24 10:58:06,350 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-24 10:58:13,133 - INFO - Успешное подключение к БД
+2025-09-24 10:58:16,535 - INFO - Тестовые данные добавлены
+2025-09-24 11:02:41,571 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-24 11:02:52,875 - INFO - Успешное подключение к БД
+2025-09-24 11:02:55,291 - INFO - Тестовые данные добавлены
+2025-09-24 11:09:11,834 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-24 11:09:18,464 - INFO - Успешное подключение к БД
+2025-09-24 11:10:41,103 - INFO - Добавлена точка: хуй
+2025-09-24 11:11:18,079 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-24 11:11:23,309 - INFO - Успешное подключение к БД
+2025-09-24 11:16:45,476 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-24 11:17:05,601 - INFO - Успешное подключение к БД
+2025-09-24 11:17:18,041 - INFO - Таблицы успешно пересозданы
+2025-09-24 11:17:29,577 - INFO - Тестовые данные добавлены
+2025-09-24 11:18:22,404 - INFO - Добавлена точка: хуй
+2025-09-24 11:18:53,175 - ERROR - Ошибка добавления сотрудника: ОШИБКА:  INSERT или UPDATE в таблице "employees" нарушает ограничение внешнего ключа "employees_point_id_fkey"
+DETAIL:  Ключ (point_id)=(52) отсутствует в таблице "points".
+
+2025-09-24 11:19:34,587 - INFO - Добавлен сотрудник: Машутер
+2025-09-24 11:20:14,513 - INFO - Добавлен продукт: Добри киви
+2025-09-24 11:23:45,154 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-24 14:04:36,545 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-24 14:04:57,361 - INFO - Успешное подключение к БД
+2025-09-24 14:05:02,186 - ERROR - Ошибка подключения к БД: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-09-24 14:05:11,019 - INFO - Успешное подключение к БД
+2025-09-24 14:05:19,240 - INFO - Таблицы успешно пересозданы
+2025-09-24 14:05:35,989 - INFO - Добавлена точка: рпа
+2025-09-24 14:05:57,602 - INFO - Добавлен сотрудник: хщошр
+2025-09-24 14:06:40,065 - INFO - Добавлен продукт: sdf
+2025-09-24 14:07:02,637 - INFO - Тестовые данные добавлены
+2025-09-24 14:08:45,789 - INFO - Таблицы успешно пересозданы
+2025-09-24 14:08:50,152 - INFO - Тестовые данные добавлены
+2025-09-24 14:08:53,263 - INFO - Тестовые данные добавлены
+2025-09-24 14:09:08,248 - INFO - Приложение 'Крошка Картошка' запущено
+2025-09-24 14:09:17,517 - INFO - Успешное подключение к БД

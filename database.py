@@ -1,0 +1,726 @@
+import psycopg2
+import logging
+import os
+from datetime import datetime
+from typing import List, Tuple, Optional, Dict
+
+class DatabaseManager:
+    def __init__(self):
+        self.connection = None
+        self.connection_params = {
+            'dbname': 'postgres',
+            'user': 'postgres',
+            'password': "",
+            'host': 'localhost',
+            'port': '5432'
+        }
+        self.setup_logging()
+
+    def setup_logging(self):
+        """Настраивает логирование"""
+        logging.basicConfig(
+            filename='app.log',
+            level=logging.INFO,
+            format='%(asctime)s - %(levelname)s - %(message)s',
+            encoding='utf-8'
+        )
+
+    def set_connection_params(self, params: Dict):
+        """Устанавливает параметры подключения"""
+        self.connection_params.update(params)
+
+    def get_connection_params(self):
+        """Возвращает текущие параметры подключения"""
+        return self.connection_params.copy()
+
+    def connect(self) -> bool:
+        """Подключается к базе данных"""
+        try:
+            self.connection = psycopg2.connect(**self.connection_params)
+            logging.info("Успешное подключение к БД")
+            return True
+        except Exception as e:
+            logging.error(f"Ошибка подключения к БД: {str(e)}")
+            return False
+
+    def disconnect(self):
+        """Отключается от базы данных"""
+        if self.connection:
+            self.connection.close()
+            self.connection = None
+            logging.info("Отключение от БД")
+
+    def is_connected(self) -> bool:
+        """Проверяет подключение к БД"""
+        if self.connection:
+            try:
+                cursor = self.connection.cursor()
+                cursor.execute("SELECT 1")
+                cursor.close()
+                return True
+            except Exception as e:
+                logging.error(f"Ошибка проверки подключения: {str(e)}")
+                self.connection = None
+                return False
+        return False
+
+    def load_from_environment(self):
+        """Загружает параметры из переменных окружения"""
+        env_params = {
+            'dbname': os.getenv('DB_NAME', 'postgres'),
+            'user': os.getenv('DB_USER', 'postgres'),
+            'password': os.getenv('DB_PASSWORD', ''),
+            'host': os.getenv('DB_HOST', 'localhost'),
+            'port': os.getenv('DB_PORT', '5432')
+        }
+        self.set_connection_params(env_params)
+        logging.info("Параметры БД загружены из окружения")
+
+    def recreate_tables(self) -> bool:
+        """Пересоздает таблицы"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return False
+
+            cursor = self.connection.cursor()
+
+            # Удаляем существующие таблицы
+            tables = ['transactions', 'supplies', 'products', 'employees', 'points']
+            for table in tables:
+                cursor.execute(f"DROP TABLE IF EXISTS {table} CASCADE")
+
+            # Создаем таблицы заново
+            scripts = [
+                """
+                CREATE TABLE points (
+                    point_id SERIAL PRIMARY KEY,
+                    address VARCHAR(200) NOT NULL,
+                    phone_number VARCHAR(20),
+                    manager_id INTEGER NULL
+                )
+                """,
+                """
+                CREATE TABLE employees (
+                    employee_id SERIAL PRIMARY KEY,
+                    full_name VARCHAR(150) NOT NULL,
+                    position VARCHAR(100) NOT NULL,
+                    salary DECIMAL(10, 2) NOT NULL CHECK (salary >= 0),
+                    schedule VARCHAR(50) NOT NULL,
+                    point_id INTEGER NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (point_id) REFERENCES points(point_id) ON DELETE CASCADE
+                )
+                """,
+                """
+                ALTER TABLE points
+                ADD CONSTRAINT fk_points_manager
+                FOREIGN KEY (manager_id) REFERENCES employees(employee_id)
+                """,
+                """
+                CREATE TABLE products (
+                    product_id SERIAL PRIMARY KEY,
+                    name VARCHAR(100) NOT NULL,
+                    category VARCHAR(50) NOT NULL,
+                    cost_price DECIMAL(10, 2) NOT NULL CHECK (cost_price >= 0),
+                    selling_price DECIMAL(10, 2) NOT NULL CHECK (selling_price >= 0),
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+                """,
+                """
+                CREATE TABLE supplies (
+                    supply_id SERIAL PRIMARY KEY,
+                    product_id INTEGER NOT NULL,
+                    quantity DECIMAL(10, 2) NOT NULL CHECK (quantity > 0),
+                    delivery_date DATE NOT NULL,
+                    expiry_date DATE NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE
+                )
+                """,
+                """
+                CREATE TABLE transactions (
+                    transaction_id SERIAL PRIMARY KEY,
+                    point_id INTEGER NOT NULL,
+                    type VARCHAR(20) NOT NULL CHECK (type IN ('Доход', 'Расход')),
+                    amount DECIMAL(12, 2) NOT NULL CHECK (amount >= 0),
+                    date DATE NOT NULL,
+                    description TEXT,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (point_id) REFERENCES points(point_id) ON DELETE CASCADE
+                )
+                """
+            ]
+
+            for script in scripts:
+                cursor.execute(script)
+
+            self.connection.commit()
+            cursor.close()
+            logging.info("Таблицы успешно пересозданы")
+            return True
+
+        except Exception as e:
+            logging.error(f"Ошибка пересоздания таблиц: {str(e)}")
+            if self.connection:
+                self.connection.rollback()
+            return False
+
+    def insert_sample_data(self) -> bool:
+        """Вставляет тестовые данные"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return False
+
+            cursor = self.connection.cursor()
+
+            # Вставляем тестовые данные
+            sample_data = [
+                # Точки
+                "INSERT INTO points (address, phone_number) VALUES ('ул. Главная, 1', '+7 (495) 111-22-33')",
+                "INSERT INTO points (address, phone_number) VALUES ('пр. Мира, 45', '+7 (495) 222-33-44')",
+                "INSERT INTO points (address, phone_number) VALUES ('ул. Рабочая, 12', '+7 (495) 333-44-55')",
+
+                # Сотрудники
+                "INSERT INTO employees (full_name, position, salary, schedule, point_id) VALUES ('Иванов Иван Иванович', 'администратор', 50000.00, '5/2', 1)",
+                "INSERT INTO employees (full_name, position, salary, schedule, point_id) VALUES ('Петрова Мария Сергеевна', 'кассир', 35000.00, '2/2', 1)",
+                "INSERT INTO employees (full_name, position, salary, schedule, point_id) VALUES ('Сидоров Алексей Петрович', 'повар', 45000.00, '2/2', 1)",
+                "INSERT INTO employees (full_name, position, salary, schedule, point_id) VALUES ('Кузнецова Елена Викторовна', 'кассир', 32000.00, '5/2', 2)",
+                "INSERT INTO employees (full_name, position, salary, schedule, point_id) VALUES ('Васильев Дмитрий Олегович', 'повар', 42000.00, '2/2', 2)",
+                "INSERT INTO employees (full_name, position, salary, schedule, point_id) VALUES ('Николаева Ольга Игоревна', 'администратор', 48000.00, '5/2', 3)",
+                "INSERT INTO employees (full_name, position, salary, schedule, point_id) VALUES ('Смирнов Артем Александрович', 'повар', 43000.00, '2/2', 3)",
+                "INSERT INTO employees (full_name, position, salary, schedule, point_id) VALUES ('Федорова Анна Дмитриевна', 'кассир', 33000.00, '5/2', 3)",
+
+                # Назначение менеджеров
+                "UPDATE points SET manager_id = 1 WHERE point_id = 1",
+                "UPDATE points SET manager_id = 6 WHERE point_id = 3",
+
+                # Продукты
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Крошка Картошка с растительным маслом', 'основной картофель', 35.00, 189.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Крошка Картошка с сыром', 'основной картофель', 45.00, 219.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Крошка Картошка со сливочным маслом', 'основной картофель', 38.00, 199.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Крошка Картошка с укропом и растительным маслом', 'основной картофель', 40.00, 209.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Печёный МЭШ Классический', 'основной картофель', 30.00, 159.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Печёный Мэш Классический (большой)', 'основной картофель', 50.00, 229.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Наполнитель \"Брынзовый с укропом\"', 'наполнители', 25.00, 89.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Наполнитель \"Крабовое мясо с майонезом\"', 'наполнители', 28.00, 99.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Наполнитель \"Сосиски в горчичном соусе\"', 'наполнители', 30.00, 109.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Наполнитель \"Сырный с ветчиной\"', 'наполнители', 32.00, 119.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Наполнитель \"Закусочный с грибами\"', 'наполнители', 29.00, 104.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Наполнитель \"Мясное ассорти\"', 'наполнители', 35.00, 129.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Наполнитель \"Красная рыбка\"', 'наполнители', 40.00, 149.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Наполнитель \"Цыпленок с жареными грибами\"', 'наполнители', 33.00, 124.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Борщ', 'супы', 45.00, 159.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Куриная лапша', 'супы', 40.00, 149.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Гороховый суп', 'супы', 42.00, 154.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Сливочная уха по-фински', 'супы', 50.00, 179.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Пирожное Картошка', 'десерты', 20.00, 89.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Пирожное картошка \"Орех в карамели\"', 'десерты', 25.00, 109.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Пирожное картошка Кокос', 'десерты', 23.00, 99.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Пирожное \"Чиакейк маракуйя-облепиха\"', 'десерты', 35.00, 149.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Морс Ягодный 0.5л', 'напитки', 15.00, 129.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Напиток «Добрый Pulpy» 0.45л', 'напитки', 18.00, 139.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Сок Добрый 0.3л', 'напитки', 12.00, 99.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Квас 0.4л', 'напитки', 10.00, 89.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Чай черный', 'напитки', 5.00, 79.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Чай зеленый', 'напитки', 5.00, 79.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Кофе американо', 'напитки', 8.00, 119.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Сметана', 'добавки', 8.00, 49.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Кетчуп', 'соусы', 6.00, 39.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Майонез', 'соусы', 6.00, 39.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Горчица', 'соусы', 5.00, 29.00)",
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Сырный соус', 'соусы', 10.00, 59.00)",
+
+                # Поставки
+                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (1, 200.0, '2024-01-15', '2024-01-30')",
+                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (2, 150.0, '2024-01-15', '2024-01-28')",
+                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (3, 180.0, '2024-01-15', '2024-01-29')",
+                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (7, 50.0, '2024-01-14', '2024-01-21')",
+                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (8, 40.0, '2024-01-14', '2024-01-21')",
+                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (9, 45.0, '2024-01-14', '2024-01-21')",
+                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (10, 55.0, '2024-01-14', '2024-01-22')",
+                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (15, 100.0, '2024-01-14', '2024-01-18')",
+                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (16, 80.0, '2024-01-14', '2024-01-18')",
+                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (17, 90.0, '2024-01-14', '2024-01-19')",
+                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (19, 200.0, '2024-01-13', '2024-01-20')",
+                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (20, 150.0, '2024-01-13', '2024-01-20')",
+                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (21, 180.0, '2024-01-13', '2024-01-20')",
+                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (23, 300.0, '2024-01-10', '2024-07-10')",
+                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (24, 250.0, '2024-01-10', '2024-07-10')",
+                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (25, 200.0, '2024-01-10', '2024-07-10')",
+                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (26, 180.0, '2024-01-10', '2024-07-10')",
+                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (32, 30.0, '2024-01-12', '2024-03-12')",
+                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (33, 25.0, '2024-01-12', '2024-03-12')",
+                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (34, 20.0, '2024-01-12', '2024-03-12')",
+
+                # Финансовые операции
+                # Точка 1
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (1, 'Доход', 42350.00, '2024-01-15', 'Выручка за понедельник')",
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (1, 'Доход', 48700.00, '2024-01-16', 'Выручка за вторник')",
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (1, 'Доход', 53200.00, '2024-01-17', 'Выручка за среду')",
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (1, 'Доход', 59800.00, '2024-01-18', 'Выручка за четверг')",
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (1, 'Доход', 72300.00, '2024-01-19', 'Выручка за пятницу')",
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (1, 'Доход', 84500.00, '2024-01-20', 'Выручка за субботу')",
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (1, 'Доход', 71200.00, '2024-01-21', 'Выручка за воскресенье')",
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (1, 'Расход', 45000.00, '2024-01-15', 'Зарплата сотрудникам')",
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (1, 'Расход', 28500.00, '2024-01-15', 'Закупка продуктов')",
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (1, 'Расход', 15000.00, '2024-01-15', 'Аренда и коммунальные услуги')",
+
+                # Точка 2
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (2, 'Доход', 31200.00, '2024-01-15', 'Выручка за понедельник')",
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (2, 'Доход', 35600.00, '2024-01-16', 'Выручка за вторник')",
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (2, 'Доход', 39800.00, '2024-01-17', 'Выручка за среду')",
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (2, 'Доход', 44500.00, '2024-01-18', 'Выручка за четверг')",
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (2, 'Доход', 52300.00, '2024-01-19', 'Выручка за пятницу')",
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (2, 'Доход', 61200.00, '2024-01-20', 'Выручка за субботу')",
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (2, 'Доход', 48700.00, '2024-01-21', 'Выручка за воскресенье')",
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (2, 'Расход', 32000.00, '2024-01-15', 'Зарплата сотрудникам')",
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (2, 'Расход', 19800.00, '2024-01-15', 'Закупка продуктов')",
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (2, 'Расход', 12000.00, '2024-01-15', 'Аренда и коммунальные услуги')",
+
+                # Точка 3
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (3, 'Доход', 25800.00, '2024-01-15', 'Выручка за понедельник')",
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (3, 'Доход', 29400.00, '2024-01-16', 'Выручка за вторник')",
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (3, 'Доход', 33200.00, '2024-01-17', 'Выручка за среду')",
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (3, 'Доход', 37800.00, '2024-01-18', 'Выручка за четверг')",
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (3, 'Доход', 44500.00, '2024-01-19', 'Выручка за пятницу')",
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (3, 'Доход', 52300.00, '2024-01-20', 'Выручка за субботу')",
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (3, 'Доход', 41200.00, '2024-01-21', 'Выручка за воскресенье')",
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (3, 'Расход', 38000.00, '2024-01-15', 'Зарплата сотрудникам')",
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (3, 'Расход', 22400.00, '2024-01-15', 'Закупка продуктов')",
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (3, 'Расход', 18000.00, '2024-01-15', 'Аренда и коммунальные услуги')"
+            ]
+
+            for query in sample_data:
+                cursor.execute(query)
+
+            # Назначаем менеджеров
+            cursor.execute("UPDATE points SET manager_id = 1 WHERE point_id = 1")
+            cursor.execute("UPDATE points SET manager_id = 4 WHERE point_id = 2")
+
+            self.connection.commit()
+            cursor.close()
+            logging.info("Тестовые данные добавлены")
+            return True
+
+        except Exception as e:
+            logging.error(f"Ошибка добавления тестовых данных: {str(e)}")
+            if self.connection:
+                self.connection.rollback()
+            return False
+    def clear_tables(self) -> bool:
+    #Очищает все таблицы (удаляет данные, но не удаляет таблицы
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return False
+
+            cursor = self.connection.cursor()
+
+            # Очищаем таблицы в правильном порядке из-за внешних ключей
+            clear_scripts = [
+                "DELETE FROM transactions",
+                "DELETE FROM supplies", 
+                "DELETE FROM employees",
+                "DELETE FROM products",
+                "DELETE FROM points"
+            ]
+
+            for script in clear_scripts:
+                cursor.execute(script)
+
+            # Сбрасываем последовательности (auto-increment)
+            sequences = [
+                "points_point_id_seq",
+                "employees_employee_id_seq", 
+                "products_product_id_seq",
+                "supplies_supply_id_seq",
+                "transactions_transaction_id_seq"
+            ]
+
+            for sequence in sequences:
+                cursor.execute(f"ALTER SEQUENCE {sequence} RESTART WITH 1")
+
+            self.connection.commit()
+            cursor.close()
+            logging.info("Все таблицы очищены")
+            return True
+
+        except Exception as e:
+            logging.error(f"Ошибка очистки таблиц: {str(e)}")
+            if self.connection:
+                self.connection.rollback()
+            return False
+
+    # МЕТОДЫ ДЛЯ ПОЛУЧЕНИЯ ДАННЫХ
+    def get_points(self) -> List[Tuple]:
+        """Получает все точки"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return []
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT * FROM points ORDER BY point_id")
+            result = cursor.fetchall()
+            cursor.close()
+            return result
+        except Exception as e:
+            logging.error(f"Ошибка получения точек: {str(e)}")
+            return []
+
+    def get_employees(self) -> List[Tuple]:
+        """Получает всех сотрудников"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return []
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT * FROM employees ORDER BY employee_id")
+            result = cursor.fetchall()
+            cursor.close()
+            return result
+        except Exception as e:
+            logging.error(f"Ошибка получения сотрудников: {str(e)}")
+            return []
+
+    def get_products(self) -> List[Tuple]:
+        """Получает все продукты"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return []
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT * FROM products ORDER BY product_id")
+            result = cursor.fetchall()
+            cursor.close()
+            return result
+        except Exception as e:
+            logging.error(f"Ошибка получения продуктов: {str(e)}")
+            return []
+
+    def get_finances(self) -> List[Tuple]:
+        """Получает все финансовые операции"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return []
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT * FROM transactions ORDER BY transaction_id")
+            result = cursor.fetchall()
+            cursor.close()
+            return result
+        except Exception as e:
+            logging.error(f"Ошибка получения финансов: {str(e)}")
+            return []
+
+    def get_supplies(self) -> List[Tuple]:
+        """Получает все поставки"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return []
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT * FROM supplies ORDER BY supply_id")
+            result = cursor.fetchall()
+            cursor.close()
+            return result
+        except Exception as e:
+            logging.error(f"Ошибка получения поставок: {str(e)}")
+            return []
+
+    # МЕТОДЫ ДЛЯ ДОБАВЛЕНИЯ ДАННЫХ
+    def insert_point(self, address: str, phone_number: str = None) -> bool:
+        """Добавляет новую точку"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return False
+            
+            cursor = self.connection.cursor()
+            cursor.execute(
+                "INSERT INTO points (address, phone_number) VALUES (%s, %s)",
+                (address, phone_number)
+            )
+            self.connection.commit()
+            cursor.close()
+            logging.info(f"Добавлена точка: {address}")
+            return True
+        except Exception as e:
+            logging.error(f"Ошибка добавления точки: {str(e)}")
+            if self.connection:
+                self.connection.rollback()
+            return False
+
+    def insert_employee(self, full_name: str, position: str, salary: float, schedule: str, point_id: int) -> bool:
+        """Добавляет нового сотрудника"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return False
+            
+            cursor = self.connection.cursor()
+            cursor.execute(
+                "INSERT INTO employees (full_name, position, salary, schedule, point_id) VALUES (%s, %s, %s, %s, %s)",
+                (full_name, position, salary, schedule, point_id)
+            )
+            self.connection.commit()
+            cursor.close()
+            logging.info(f"Добавлен сотрудник: {full_name}")
+            return True
+        except Exception as e:
+            logging.error(f"Ошибка добавления сотрудника: {str(e)}")
+            if self.connection:
+                self.connection.rollback()
+            return False
+
+    def insert_product(self, name: str, category: str, cost_price: float, selling_price: float) -> bool:
+        """Добавляет новый продукт"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return False
+            
+            cursor = self.connection.cursor()
+            cursor.execute(
+                "INSERT INTO products (name, category, cost_price, selling_price) VALUES (%s, %s, %s, %s)",
+                (name, category, cost_price, selling_price)
+            )
+            self.connection.commit()
+            cursor.close()
+            logging.info(f"Добавлен продукт: {name}")
+            return True
+        except Exception as e:
+            logging.error(f"Ошибка добавления продукта: {str(e)}")
+            if self.connection:
+                self.connection.rollback()
+            return False
+
+    def insert_supply(self, product_id: int, quantity: float, delivery_date: str, expiry_date: str) -> bool:
+        """Добавляет новую поставку"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return False
+            
+            cursor = self.connection.cursor()
+            cursor.execute(
+                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (%s, %s, %s, %s)",
+                (product_id, quantity, delivery_date, expiry_date)
+            )
+            self.connection.commit()
+            cursor.close()
+            logging.info(f"Добавлена поставка для продукта ID: {product_id}")
+            return True
+        except Exception as e:
+            logging.error(f"Ошибка добавления поставки: {str(e)}")
+            if self.connection:
+                self.connection.rollback()
+            return False
+
+    def insert_transaction(self, point_id: int, type: str, amount: float, date: str, description: str = None) -> bool:
+        """Добавляет новую финансовую операцию"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return False
+            
+            cursor = self.connection.cursor()
+            cursor.execute(
+                "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (%s, %s, %s, %s, %s)",
+                (point_id, type, amount, date, description)
+            )
+            self.connection.commit()
+            cursor.close()
+            logging.info(f"Добавлена операция: {type} на сумму {amount}")
+            return True
+        except Exception as e:
+            logging.error(f"Ошибка добавления операции: {str(e)}")
+            if self.connection:
+                self.connection.rollback()
+            return False
+
+    # МЕТОДЫ ДЛЯ УДАЛЕНИЯ ДАННЫХ
+    def delete_point(self, point_id: int) -> bool:
+        """Удаляет точку по ID"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return False
+            
+            cursor = self.connection.cursor()
+            cursor.execute("DELETE FROM points WHERE point_id = %s", (point_id,))
+            self.connection.commit()
+            cursor.close()
+            logging.info(f"Удалена точка ID: {point_id}")
+            return True
+        except Exception as e:
+            logging.error(f"Ошибка удаления точки: {str(e)}")
+            if self.connection:
+                self.connection.rollback()
+            return False
+
+    def delete_employee(self, employee_id: int) -> bool:
+        """Удаляет сотрудника по ID"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return False
+            
+            cursor = self.connection.cursor()
+            cursor.execute("DELETE FROM employees WHERE employee_id = %s", (employee_id,))
+            self.connection.commit()
+            cursor.close()
+            logging.info(f"Удален сотрудник ID: {employee_id}")
+            return True
+        except Exception as e:
+            logging.error(f"Ошибка удаления сотрудника: {str(e)}")
+            if self.connection:
+                self.connection.rollback()
+            return False
+
+    def delete_product(self, product_id: int) -> bool:
+        """Удаляет продукт по ID"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return False
+            
+            cursor = self.connection.cursor()
+            cursor.execute("DELETE FROM products WHERE product_id = %s", (product_id,))
+            self.connection.commit()
+            cursor.close()
+            logging.info(f"Удален продукт ID: {product_id}")
+            return True
+        except Exception as e:
+            logging.error(f"Ошибка удаления продукта: {str(e)}")
+            if self.connection:
+                self.connection.rollback()
+            return False
+
+    # МЕТОДЫ ДЛЯ ПОЛУЧЕНИЯ СТАТИСТИКИ
+    def get_points_count(self) -> int:
+        """Возвращает количество точек"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return 0
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT COUNT(*) FROM points")
+            result = cursor.fetchone()[0]
+            cursor.close()
+            return result
+        except Exception as e:
+            logging.error(f"Ошибка получения количества точек: {str(e)}")
+            return 0
+
+    def get_employees_count(self) -> int:
+        """Возвращает количество сотрудников"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return 0
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT COUNT(*) FROM employees")
+            result = cursor.fetchone()[0]
+            cursor.close()
+            return result
+        except Exception as e:
+            logging.error(f"Ошибка получения количества сотрудников: {str(e)}")
+            return 0
+
+    def get_products_count(self) -> int:
+        """Возвращает количество продуктов"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return 0
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT COUNT(*) FROM products")
+            result = cursor.fetchone()[0]
+            cursor.close()
+            return result
+        except Exception as e:
+            logging.error(f"Ошибка получения количества продуктов: {str(e)}")
+            return 0
+
+    def get_total_revenue(self) -> float:
+        """Возвращает общий доход"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return 0.0
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT SUM(amount) FROM transactions WHERE type = 'Доход'")
+            result = cursor.fetchone()[0] or 0.0
+            cursor.close()
+            return float(result)
+        except Exception as e:
+            logging.error(f"Ошибка получения общего дохода: {str(e)}")
+            return 0.0
+
+    def get_total_expenses(self) -> float:
+        """Возвращает общие расходы"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return 0.0
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT SUM(amount) FROM transactions WHERE type = 'Расход'")
+            result = cursor.fetchone()[0] or 0.0
+            cursor.close()
+            return float(result)
+        except Exception as e:
+            logging.error(f"Ошибка получения общих расходов: {str(e)}")
+            return 0.0
+
+    # МЕТОД ДЛЯ ПОЛУЧЕНИЯ ЛОГОВ
+    def get_logs(self) -> List[str]:
+        """Читает логи из файла"""
+        try:
+            with open('app.log', 'r', encoding='utf-8') as f:
+                return f.readlines()
+        except Exception as e:
+            logging.error(f"Ошибка чтения логов: {str(e)}")
+            return ["Логи не найдены"]
+
+    # МЕТОД ДЛЯ ПРОВЕРКИ СУЩЕСТВОВАНИЯ ДАННЫХ
+    def check_data_exists(self) -> Dict[str, bool]:
+        """Проверяет существование данных в таблицах"""
+        result = {
+            'points': False,
+            'employees': False,
+            'products': False,
+            'supplies': False,
+            'transactions': False
+        }
+        
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return result
+            
+            cursor = self.connection.cursor()
+            
+            # Проверяем каждую таблицу
+            cursor.execute("SELECT EXISTS(SELECT 1 FROM points LIMIT 1)")
+            result['points'] = cursor.fetchone()[0]
+            
+            cursor.execute("SELECT EXISTS(SELECT 1 FROM employees LIMIT 1)")
+            result['employees'] = cursor.fetchone()[0]
+            
+            cursor.execute("SELECT EXISTS(SELECT 1 FROM products LIMIT 1)")
+            result['products'] = cursor.fetchone()[0]
+            
+            cursor.execute("SELECT EXISTS(SELECT 1 FROM supplies LIMIT 1)")
+            result['supplies'] = cursor.fetchone()[0]
+            
+            cursor.execute("SELECT EXISTS(SELECT 1 FROM transactions LIMIT 1)")
+            result['transactions'] = cursor.fetchone()[0]
+            
+            cursor.close()
+            
+        except Exception as e:
+            logging.error(f"Ошибка проверки данных: {str(e)}")
+        
+        return result
