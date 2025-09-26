@@ -1,10 +1,10 @@
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QPushButton, QLabel, QMessageBox, QGridLayout, QDialog)
+    QPushButton, QLabel, QMessageBox, QGridLayout, QDialog, QTextEdit)
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
 
 from database import DatabaseManager
-from dialogs import ConnectionDialog, LoggerDialog, DataViewDialog, AddDataDialog, AddPointDialog, AddEmployeeDialog, AddProductDialog
+from dialogs import ConnectionDialog,AddFinanceDialog,  EditFinanceDialog, LoggerDialog, DataViewDialog, AddDataDialog, AddPointDialog, AddEmployeeDialog, AddProductDialog
 from styles import STYLES
 
 class MainWindow(QMainWindow):
@@ -12,7 +12,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.db_manager = DatabaseManager()
         self.setWindowTitle("🍟 Система управления 'Крошка Картошка'")
-        self.setMinimumSize(900, 700)
+        self.setMinimumSize(900, 650)
         self.setup_ui()
         self.apply_styles()
 
@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
         title = QLabel("🍟 Крошка Картошка - Система управления")
         title.setAlignment(Qt.AlignCenter)
         title.setObjectName("title")
-        title.setFont(QFont("Arial", 18, QFont.Bold))
+        title.setFont(QFont("Arial", 60, QFont.Bold))
         layout.addWidget(title)
 
         # # Подзаголовок
@@ -46,13 +46,12 @@ class MainWindow(QMainWindow):
         grid_layout.setSpacing(15)
         grid_layout.setContentsMargins(20, 20, 20, 20)
 
-        # Создаем кнопки меню с более короткими текстами
         buttons_info = [
             ("📊 Логи", self.show_logger, 0, 0),
             ("🔌 Подключение к БД", self.show_connection_dialog, 0, 1),
             ("➕ Добавить данные", self.show_add_data, 1, 0),
             ("👀 Просмотр данных", self.show_view_data, 1, 1),
-            ("🔄 Обновить", self.refresh_all, 2, 0),
+            ("📈 Статистика", self.refresh_all, 2, 0),
             ("ℹ️ О программе", self.show_about, 2, 1)
         ]
 
@@ -60,7 +59,7 @@ class MainWindow(QMainWindow):
             btn = QPushButton(text)
             btn.setObjectName("primary")
             btn.clicked.connect(slot)
-            btn.setMinimumHeight(60)
+            btn.setMinimumHeight(80)
             btn.setMinimumWidth(180)
             grid_layout.addWidget(btn, row, col)
 
@@ -111,6 +110,9 @@ class MainWindow(QMainWindow):
                 self.add_employee()
             elif data_type == 'product':
                 self.add_product()
+                self.add_product()
+            elif data_type == 'finances': 
+                self.add_finance()
 
     def show_view_data(self):
         if not self.db_manager.is_connected():
@@ -121,8 +123,89 @@ class MainWindow(QMainWindow):
         dialog.exec()
 
     def refresh_all(self):
-        self.update_status()
-        QMessageBox.information(self, "Обновление", "Статус обновлен")
+        """Показывает актуальную статистику"""
+        if not self.db_manager.is_connected():
+            QMessageBox.warning(self, "Ошибка", "Сначала подключитесь к базе данных")
+            return
+        
+        try:
+            # Получаем статистику
+            points_count = self.db_manager.get_points_count()
+            employees_count = self.db_manager.get_employees_count()
+            products_count = self.db_manager.get_products_count()
+            total_revenue = self.db_manager.get_total_revenue()
+            total_expenses = self.db_manager.get_total_expenses()
+            profit = total_revenue - total_expenses
+            
+            # Проверяем наличие данных в таблицах
+            data_exists = self.db_manager.check_data_exists()
+            
+            # Формируем подробное сообщение со статистикой
+            stats_text = f"""
+            <h2>📊 Статистика системы</h2>
+            
+            <h3>Основные показатели:</h3>
+            <ul>
+                <li><b>Количество точек:</b> {points_count}</li>
+                <li><b>Количество сотрудников:</b> {employees_count}</li>
+                <li><b>Количество продуктов:</b> {products_count}</li>
+                <li><b>Общий доход:</b> {total_revenue:,.2f} руб.</li>
+                <li><b>Общие расходы:</b> {total_expenses:,.2f} руб.</li>
+                <li><b>Прибыль:</b> <span style='color: {'#90cb25' if profit >= 0 else '#d9534f'}'>{profit:,.2f} руб.</span></li>
+            </ul>
+            
+            <h3>Наличие данных в таблицах:</h3>
+            <ul>
+                <li>📍 Точки: {'✅ Есть данные' if data_exists['points'] else '❌ Нет данных'}</li>
+                <li>👥 Сотрудники: {'✅ Есть данные' if data_exists['employees'] else '❌ Нет данных'}</li>
+                <li>🍟 Продукты: {'✅ Есть данные' if data_exists['products'] else '❌ Нет данных'}</li>
+                <li>💰 Финансы: {'✅ Есть данные' if data_exists['transactions'] else '❌ Нет данных'}</li>
+                <li>📦 Поставки: {'✅ Есть данные' if data_exists['supplies'] else '❌ Нет данных'}</li>
+            </ul>
+            
+            <p style='color: #fda601; font-weight: bold;'>
+            Статистика обновлена: {self.db_manager.get_connection_params()['host']}
+            </p>
+            """
+            
+            # Создаем кастомное диалоговое окно для статистики
+            dialog = QDialog(self)
+            dialog.setWindowTitle("Статистика системы")
+            dialog.setMinimumSize(500, 600)
+            
+            layout = QVBoxLayout()
+            
+            # Текст статистики
+            stats_label = QLabel(stats_text)
+            stats_label.setWordWrap(True)
+            stats_label.setTextFormat(Qt.RichText)
+            
+            # Поле для логов (последние 5 записей)
+            logs_label = QLabel("<h3>Последние действия в системе:</h3>")
+            logs_text = QTextEdit()
+            logs_text.setReadOnly(True)
+            logs_text.setMaximumHeight(150)
+            
+            # Получаем последние логи
+            logs = self.db_manager.get_logs()
+            recent_logs = ''.join(logs[-5:]) if logs else "Логи не найдены"
+            logs_text.setPlainText(recent_logs)
+            
+            # Кнопки
+            close_btn = QPushButton("Закрыть")
+            close_btn.clicked.connect(dialog.accept)
+            
+            layout.addWidget(stats_label)
+            layout.addWidget(logs_label)
+            layout.addWidget(logs_text)
+            layout.addWidget(close_btn)
+            
+            dialog.setLayout(layout)
+            dialog.exec()
+            
+        except Exception as e:
+            logging.error(f"Ошибка получения статистики: {str(e)}")
+            QMessageBox.warning(self, "Ошибка", f"Не удалось загрузить статистику: {str(e)}")
 
     def show_about(self):
         about_text = """
@@ -138,7 +221,6 @@ class MainWindow(QMainWindow):
             <li>Учет сотрудников</li>
             <li>Управление продуктами</li>
             <li>Финансовый учет</li>
-            <li>Учет поставок</li>
         </ul>
         
         <p style='color: #90cb25;'>Цветовая схема: Бренд Крошка Картошка</p>
@@ -193,3 +275,25 @@ class MainWindow(QMainWindow):
                     QMessageBox.warning(self, "Ошибка", "Цены должны быть числами")
             else:
                 QMessageBox.warning(self, "Ошибка", "Все поля обязательны для заполнения")
+    def add_finance(self):
+        dialog = AddFinanceDialog(self.db_manager, self)
+        if dialog.exec() == QDialog.Accepted:
+            data = dialog.get_data()
+            if all([data['point_id'], data['amount'], data['date']]):
+                try:
+                    point_id = int(data['point_id'])
+                    amount = float(data['amount'])
+                    
+                    # Проверка формата даты (базовая)
+                    if len(data['date']) != 10 or data['date'][4] != '-' or data['date'][7] != '-':
+                        QMessageBox.warning(self, "Ошибка", "Дата должна быть в формате ГГГГ-ММ-ДД")
+                        return
+                    
+                    if self.db_manager.insert_transaction(point_id, data['type'], amount, data['date'], data['description']):
+                        QMessageBox.information(self, "Успех", "Финансовая операция успешно добавлена!")
+                    else:
+                        QMessageBox.warning(self, "Ошибка", "Ошибка при добавлении финансовой операции")
+                except ValueError:
+                    QMessageBox.warning(self, "Ошибка", "ID точки и сумма должны быть числами")
+            else:
+                QMessageBox.warning(self, "Ошибка", "Поля с * обязательны для заполнения")

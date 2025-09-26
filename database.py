@@ -232,28 +232,6 @@ class DatabaseManager:
                 "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Горчица', 'соусы', 5.00, 29.00)",
                 "INSERT INTO products (name, category, cost_price, selling_price) VALUES ('Сырный соус', 'соусы', 10.00, 59.00)",
 
-                # Поставки
-                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (1, 200.0, '2024-01-15', '2024-01-30')",
-                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (2, 150.0, '2024-01-15', '2024-01-28')",
-                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (3, 180.0, '2024-01-15', '2024-01-29')",
-                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (7, 50.0, '2024-01-14', '2024-01-21')",
-                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (8, 40.0, '2024-01-14', '2024-01-21')",
-                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (9, 45.0, '2024-01-14', '2024-01-21')",
-                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (10, 55.0, '2024-01-14', '2024-01-22')",
-                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (15, 100.0, '2024-01-14', '2024-01-18')",
-                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (16, 80.0, '2024-01-14', '2024-01-18')",
-                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (17, 90.0, '2024-01-14', '2024-01-19')",
-                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (19, 200.0, '2024-01-13', '2024-01-20')",
-                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (20, 150.0, '2024-01-13', '2024-01-20')",
-                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (21, 180.0, '2024-01-13', '2024-01-20')",
-                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (23, 300.0, '2024-01-10', '2024-07-10')",
-                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (24, 250.0, '2024-01-10', '2024-07-10')",
-                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (25, 200.0, '2024-01-10', '2024-07-10')",
-                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (26, 180.0, '2024-01-10', '2024-07-10')",
-                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (32, 30.0, '2024-01-12', '2024-03-12')",
-                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (33, 25.0, '2024-01-12', '2024-03-12')",
-                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (34, 20.0, '2024-01-12', '2024-03-12')",
-
                 # Финансовые операции
                 # Точка 1
                 "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (1, 'Доход', 42350.00, '2024-01-15', 'Выручка за понедельник')",
@@ -320,8 +298,7 @@ class DatabaseManager:
 
             # Очищаем таблицы в правильном порядке из-за внешних ключей
             clear_scripts = [
-                "DELETE FROM transactions",
-                "DELETE FROM supplies", 
+                "DELETE FROM transactions", 
                 "DELETE FROM employees",
                 "DELETE FROM products",
                 "DELETE FROM points"
@@ -335,7 +312,6 @@ class DatabaseManager:
                 "points_point_id_seq",
                 "employees_employee_id_seq", 
                 "products_product_id_seq",
-                "supplies_supply_id_seq",
                 "transactions_transaction_id_seq"
             ]
 
@@ -496,28 +472,6 @@ class DatabaseManager:
                 self.connection.rollback()
             return False
 
-    def insert_supply(self, product_id: int, quantity: float, delivery_date: str, expiry_date: str) -> bool:
-        """Добавляет новую поставку"""
-        try:
-            if not self.is_connected():
-                if not self.connect():
-                    return False
-            
-            cursor = self.connection.cursor()
-            cursor.execute(
-                "INSERT INTO supplies (product_id, quantity, delivery_date, expiry_date) VALUES (%s, %s, %s, %s)",
-                (product_id, quantity, delivery_date, expiry_date)
-            )
-            self.connection.commit()
-            cursor.close()
-            logging.info(f"Добавлена поставка для продукта ID: {product_id}")
-            return True
-        except Exception as e:
-            logging.error(f"Ошибка добавления поставки: {str(e)}")
-            if self.connection:
-                self.connection.rollback()
-            return False
-
     def insert_transaction(self, point_id: int, type: str, amount: float, date: str, description: str = None) -> bool:
         """Добавляет новую финансовую операцию"""
         try:
@@ -594,6 +548,24 @@ class DatabaseManager:
             return True
         except Exception as e:
             logging.error(f"Ошибка удаления продукта: {str(e)}")
+            if self.connection:
+                self.connection.rollback()
+            return False
+    def delete_transaction(self, transaction_id: int) -> bool:
+        """Удаляет финансовую операцию по ID"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return False
+            
+            cursor = self.connection.cursor()
+            cursor.execute("DELETE FROM transactions WHERE transaction_id = %s", (transaction_id,))
+            self.connection.commit()
+            cursor.close()
+            logging.info(f"Удалена финансовая операция ID: {transaction_id}")
+            return True
+        except Exception as e:
+            logging.error(f"Ошибка удаления финансовой операции: {str(e)}")
             if self.connection:
                 self.connection.rollback()
             return False
@@ -724,3 +696,152 @@ class DatabaseManager:
             logging.error(f"Ошибка проверки данных: {str(e)}")
         
         return result
+    # МЕТОДЫ ДЛЯ РЕДАКТИРОВАНИЯ ДАННЫХ
+    def update_point(self, point_id: int, address: str, phone_number: str = None) -> bool:
+        """Обновляет данные точки"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return False
+            
+            cursor = self.connection.cursor()
+            cursor.execute(
+                "UPDATE points SET address = %s, phone_number = %s WHERE point_id = %s",
+                (address, phone_number, point_id)
+            )
+            self.connection.commit()
+            cursor.close()
+            logging.info(f"Обновлена точка ID: {point_id}")
+            return True
+        except Exception as e:
+            logging.error(f"Ошибка обновления точки: {str(e)}")
+            if self.connection:
+                self.connection.rollback()
+            return False
+
+    def update_employee(self, employee_id: int, full_name: str, position: str, salary: float, schedule: str, point_id: int) -> bool:
+        """Обновляет данные сотрудника"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return False
+            
+            cursor = self.connection.cursor()
+            cursor.execute(
+                "UPDATE employees SET full_name = %s, position = %s, salary = %s, schedule = %s, point_id = %s WHERE employee_id = %s",
+                (full_name, position, salary, schedule, point_id, employee_id)
+            )
+            self.connection.commit()
+            cursor.close()
+            logging.info(f"Обновлен сотрудник ID: {employee_id}")
+            return True
+        except Exception as e:
+            logging.error(f"Ошибка обновления сотрудника: {str(e)}")
+            if self.connection:
+                self.connection.rollback()
+            return False
+
+    def update_product(self, product_id: int, name: str, category: str, cost_price: float, selling_price: float) -> bool:
+        """Обновляет данные продукта"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return False
+            
+            cursor = self.connection.cursor()
+            cursor.execute(
+                "UPDATE products SET name = %s, category = %s, cost_price = %s, selling_price = %s WHERE product_id = %s",
+                (name, category, cost_price, selling_price, product_id)
+            )
+            self.connection.commit()
+            cursor.close()
+            logging.info(f"Обновлен продукт ID: {product_id}")
+            return True
+        except Exception as e:
+            logging.error(f"Ошибка обновления продукта: {str(e)}")
+            if self.connection:
+                self.connection.rollback()
+            return False
+
+    def update_transaction(self, transaction_id: int, point_id: int, type: str, amount: float, date: str, description: str = None) -> bool:
+        """Обновляет финансовую операцию"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return False
+            
+            cursor = self.connection.cursor()
+            cursor.execute(
+                "UPDATE transactions SET point_id = %s, type = %s, amount = %s, date = %s, description = %s WHERE transaction_id = %s",
+                (point_id, type, amount, date, description, transaction_id)
+            )
+            self.connection.commit()
+            cursor.close()
+            logging.info(f"Обновлена финансовая операция ID: {transaction_id}")
+            return True
+        except Exception as e:
+            logging.error(f"Ошибка обновления финансовой операции: {str(e)}")
+            if self.connection:
+                self.connection.rollback()
+            return False
+
+    # МЕТОДЫ ДЛЯ ПОЛУЧЕНИЯ КОНКРЕТНЫХ ЗАПИСЕЙ
+    def get_point_by_id(self, point_id: int) -> Tuple:
+        """Получает точку по ID"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return None
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT * FROM points WHERE point_id = %s", (point_id,))
+            result = cursor.fetchone()
+            cursor.close()
+            return result
+        except Exception as e:
+            logging.error(f"Ошибка получения точки: {str(e)}")
+            return None
+
+    def get_employee_by_id(self, employee_id: int) -> Tuple:
+        """Получает сотрудника по ID"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return None
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT * FROM employees WHERE employee_id = %s", (employee_id,))
+            result = cursor.fetchone()
+            cursor.close()
+            return result
+        except Exception as e:
+            logging.error(f"Ошибка получения сотрудника: {str(e)}")
+            return None
+
+    def get_product_by_id(self, product_id: int) -> Tuple:
+        """Получает продукт по ID"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return None
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT * FROM products WHERE product_id = %s", (product_id,))
+            result = cursor.fetchone()
+            cursor.close()
+            return result
+        except Exception as e:
+            logging.error(f"Ошибка получения продукта: {str(e)}")
+            return None
+
+    def get_transaction_by_id(self, transaction_id: int) -> Tuple:
+        """Получает финансовую операцию по ID"""
+        try:
+            if not self.is_connected():
+                if not self.connect():
+                    return None
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT * FROM transactions WHERE transaction_id = %s", (transaction_id,))
+            result = cursor.fetchone()
+            cursor.close()
+            return result
+        except Exception as e:
+            logging.error(f"Ошибка получения финансовой операции: {str(e)}")
+            return None
