@@ -12,7 +12,7 @@ class EditDataDialog(QDialog):
         self.db_manager = db_manager
         self.table_name = table_name
         self.setWindowTitle(f"Редактирование - {table_name}")
-        self.setFixedSize(300, 200)
+        self.setFixedSize(300, 250)
         self.setup_ui()
 
     def setup_ui(self):
@@ -145,9 +145,6 @@ class ConnectionDialog(QDialog):
         if dialog.exec() == QDialog.Accepted:
             action_type = dialog.get_action_type()
             
-            # if action_type == 'дщф':
-            #     self.clear_tables_action()
-            # elif action_type == 'sample_data':
             if action_type == 'sample_data':
                 self.sample_data_action()
             elif action_type == 'recreate':
@@ -166,11 +163,6 @@ class ConnectionDialog(QDialog):
             QMessageBox.information(self, "Успех", "Таблицы успешно пересозданы")
         else:
             QMessageBox.warning(self, "Ошибка", "Не удалось пересоздать таблицы")
-
-    # def load_from_env(self):
-    #     self.db_manager.load_from_environment()
-    #     self.load_current_params()
-    #     self.status_label.setText("Параметры загружены из окружения")
 
 class LoggerDialog(QDialog):
     def __init__(self, db_manager, parent=None):
@@ -405,6 +397,7 @@ class DataViewDialog(QDialog):
             QMessageBox.warning(self, "Ошибка", f"Не удалось загрузить данные: {str(e)}")
 
     def load_table_data(self, table, data):
+        table.verticalHeader().setDefaultSectionSize(35)
         if not data:
             table.setRowCount(1)
             table.setItem(0, 0, QTableWidgetItem("Нет данных"))
@@ -422,7 +415,7 @@ class AddDataDialog(QDialog):
         super().__init__(parent)
         self.db_manager = db_manager
         self.setWindowTitle("Добавить данные")
-        self.setFixedSize(300, 600)
+        self.setFixedSize(300, 370)
         self.setup_ui()
 
     def setup_ui(self):
@@ -646,7 +639,7 @@ class RecreateTablesDialog(QDialog):
         super().__init__(parent)
         self.db_manager = db_manager
         self.setWindowTitle("Управление таблицами")
-        self.setFixedSize(400, 350)
+        self.setFixedSize(400, 250)
         self.setup_ui()
 
     def setup_ui(self):
@@ -688,7 +681,7 @@ class EditPointDialog(QDialog):
         super().__init__(parent)
         self.point_data = point_data
         self.setWindowTitle("Редактирование точки")
-        self.setFixedSize(400, 200)
+        self.setFixedSize(400, 250)
         self.setup_ui()
 
     def setup_ui(self):
@@ -736,7 +729,7 @@ class EditEmployeeDialog(QDialog):
         super().__init__(parent)
         self.employee_data = employee_data
         self.setWindowTitle("Редактирование сотрудника")
-        self.setFixedSize(400, 300)
+        self.setFixedSize(400, 250)
         self.setup_ui()
 
     def setup_ui(self):
@@ -792,7 +785,7 @@ class EditProductDialog(QDialog):
         super().__init__(parent)
         self.product_data = product_data
         self.setWindowTitle("Редактирование продукта")
-        self.setFixedSize(400, 300)
+        self.setFixedSize(400, 250)
         self.setup_ui()
 
     def setup_ui(self):
@@ -843,7 +836,7 @@ class EditFinanceDialog(QDialog):
         super().__init__(parent)
         self.finance_data = finance_data
         self.setWindowTitle("Редактирование финансовой операции")
-        self.setFixedSize(400, 350)
+        self.setFixedSize(400, 250)
         self.setup_ui()
 
     def setup_ui(self):

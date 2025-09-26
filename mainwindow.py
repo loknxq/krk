@@ -160,7 +160,6 @@ class MainWindow(QMainWindow):
                 <li>👥 Сотрудники: {'✅ Есть данные' if data_exists['employees'] else '❌ Нет данных'}</li>
                 <li>🍟 Продукты: {'✅ Есть данные' if data_exists['products'] else '❌ Нет данных'}</li>
                 <li>💰 Финансы: {'✅ Есть данные' if data_exists['transactions'] else '❌ Нет данных'}</li>
-                <li>📦 Поставки: {'✅ Есть данные' if data_exists['supplies'] else '❌ Нет данных'}</li>
             </ul>
             
             <p style='color: #fda601; font-weight: bold;'>

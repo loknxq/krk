@@ -64,17 +64,6 @@ class DatabaseManager:
                 return False
         return False
 
-    def load_from_environment(self):
-        """Загружает параметры из переменных окружения"""
-        env_params = {
-            'dbname': os.getenv('DB_NAME', 'postgres'),
-            'user': os.getenv('DB_USER', 'postgres'),
-            'password': os.getenv('DB_PASSWORD', ''),
-            'host': os.getenv('DB_HOST', 'localhost'),
-            'port': os.getenv('DB_PORT', '5432')
-        }
-        self.set_connection_params(env_params)
-        logging.info("Параметры БД загружены из окружения")
 
     def recreate_tables(self) -> bool:
         """Пересоздает таблицы"""
@@ -86,7 +75,7 @@ class DatabaseManager:
             cursor = self.connection.cursor()
 
             # Удаляем существующие таблицы
-            tables = ['transactions', 'supplies', 'products', 'employees', 'points']
+            tables = ['transactions', 'products', 'employees', 'points']
             for table in tables:
                 cursor.execute(f"DROP TABLE IF EXISTS {table} CASCADE")
 
@@ -125,17 +114,6 @@ class DatabaseManager:
                     cost_price DECIMAL(10, 2) NOT NULL CHECK (cost_price >= 0),
                     selling_price DECIMAL(10, 2) NOT NULL CHECK (selling_price >= 0),
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-                """,
-                """
-                CREATE TABLE supplies (
-                    supply_id SERIAL PRIMARY KEY,
-                    product_id INTEGER NOT NULL,
-                    quantity DECIMAL(10, 2) NOT NULL CHECK (quantity > 0),
-                    delivery_date DATE NOT NULL,
-                    expiry_date DATE NOT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE
                 )
                 """,
                 """
@@ -388,21 +366,6 @@ class DatabaseManager:
             return result
         except Exception as e:
             logging.error(f"Ошибка получения финансов: {str(e)}")
-            return []
-
-    def get_supplies(self) -> List[Tuple]:
-        """Получает все поставки"""
-        try:
-            if not self.is_connected():
-                if not self.connect():
-                    return []
-            cursor = self.connection.cursor()
-            cursor.execute("SELECT * FROM supplies ORDER BY supply_id")
-            result = cursor.fetchall()
-            cursor.close()
-            return result
-        except Exception as e:
-            logging.error(f"Ошибка получения поставок: {str(e)}")
             return []
 
     # МЕТОДЫ ДЛЯ ДОБАВЛЕНИЯ ДАННЫХ
@@ -663,7 +626,6 @@ class DatabaseManager:
             'points': False,
             'employees': False,
             'products': False,
-            'supplies': False,
             'transactions': False
         }
         
@@ -683,9 +645,6 @@ class DatabaseManager:
             
             cursor.execute("SELECT EXISTS(SELECT 1 FROM products LIMIT 1)")
             result['products'] = cursor.fetchone()[0]
-            
-            cursor.execute("SELECT EXISTS(SELECT 1 FROM supplies LIMIT 1)")
-            result['supplies'] = cursor.fetchone()[0]
             
             cursor.execute("SELECT EXISTS(SELECT 1 FROM transactions LIMIT 1)")
             result['transactions'] = cursor.fetchone()[0]

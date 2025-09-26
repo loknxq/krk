@@ -207,4 +207,18 @@ QScrollBar::handle:vertical {
 QScrollBar::handle:vertical:hover {
     background-color: #90cb25;
 }
-"""
+# /* Кнопка редактирования в таблицах */
+# QPushButton[text="✏️ Редактировать"] {
+#     background-color: #90cb25; 
+#     color: white;
+#     font-weight: bold;
+# }
+
+# QPushButton[text="✏️ Редактировать"]:hover {
+#     background-color: #a8d64c;
+# }
+
+# QPushButton[text="✏️ Редактировать"]:pressed {
+#     background-color: #7bb322;
+# }
+# """
