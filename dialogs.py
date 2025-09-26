@@ -279,7 +279,6 @@ class DataViewDialog(QDialog):
                     QMessageBox.warning(self, "Ошибка", f"Не удалось удалить строку {row_id}")
             
             elif action_type == 'edit':
-                # Получаем текущие данные
                 current_data = None
                 if table_name == "Точки":
                     current_data = self.db_manager.get_point_by_id(row_id)
@@ -339,7 +338,7 @@ class DataViewDialog(QDialog):
                 elif table_name == "Финансы":
                     current_data = self.db_manager.get_transaction_by_id(row_id)
                     if current_data:
-                        dialog =(current_data, self)
+                        dialog = EditFinanceDialog(current_data, self)
                         if dialog.exec() == QDialog.Accepted:
                             data = dialog.get_data()
                             if all([data['point_id'], data['amount'], data['date']]):
@@ -347,7 +346,6 @@ class DataViewDialog(QDialog):
                                     point_id = int(data['point_id'])
                                     amount = float(data['amount'])
                                     
-                                    # Проверка формата даты (базовая)
                                     if len(data['date']) != 10 or data['date'][4] != '-' or data['date'][7] != '-':
                                         QMessageBox.warning(self, "Ошибка", "Дата должна быть в формате ГГГГ-ММ-ДД")
                                         return
@@ -364,7 +362,7 @@ class DataViewDialog(QDialog):
                     else:
                         QMessageBox.warning(self, "Ошибка", f"Финансовая операция с ID {row_id} не найдена")
                 
-                if not current_data and table_name != "Финансы":  # Для финансов уже есть проверка выше
+                if not current_data and table_name != "Финансы":
                     QMessageBox.warning(self, "Ошибка", f"Запись с ID {row_id} не найдена в таблице '{table_name}'")
                     
         except Exception as e:
@@ -681,7 +679,7 @@ class EditPointDialog(QDialog):
         super().__init__(parent)
         self.point_data = point_data
         self.setWindowTitle("Редактирование точки")
-        self.setFixedSize(400, 250)
+        self.setFixedSize(400, 300)
         self.setup_ui()
 
     def setup_ui(self):
@@ -729,7 +727,7 @@ class EditEmployeeDialog(QDialog):
         super().__init__(parent)
         self.employee_data = employee_data
         self.setWindowTitle("Редактирование сотрудника")
-        self.setFixedSize(400, 250)
+        self.setFixedSize(400, 300)
         self.setup_ui()
 
     def setup_ui(self):
@@ -785,7 +783,7 @@ class EditProductDialog(QDialog):
         super().__init__(parent)
         self.product_data = product_data
         self.setWindowTitle("Редактирование продукта")
-        self.setFixedSize(400, 250)
+        self.setFixedSize(400, 300)
         self.setup_ui()
 
     def setup_ui(self):
@@ -836,7 +834,7 @@ class EditFinanceDialog(QDialog):
         super().__init__(parent)
         self.finance_data = finance_data
         self.setWindowTitle("Редактирование финансовой операции")
-        self.setFixedSize(400, 250)
+        self.setFixedSize(400, 350)
         self.setup_ui()
 
     def setup_ui(self):
@@ -853,17 +851,17 @@ class EditFinanceDialog(QDialog):
         self.description_input = QLineEdit()
 
         # Заполняем текущие данные
-        self.point_id_input.setText(str(self.finance_data[1]) if self.finance_data[1] else "")
-        
-        # Устанавливаем текущий тип операции
-        current_type = self.finance_data[2] if self.finance_data[2] else "Доход"
-        index = self.type_combo.findText(current_type)
-        if index >= 0:
-            self.type_combo.setCurrentIndex(index)
+        if self.finance_data:
+            self.point_id_input.setText(str(self.finance_data[1]) if self.finance_data[1] else "")
             
-        self.amount_input.setText(str(self.finance_data[3]) if self.finance_data[3] else "")
-        self.date_input.setText(str(self.finance_data[4]) if self.finance_data[4] else "")
-        self.description_input.setText(self.finance_data[5] if self.finance_data[5] else "")
+            current_type = self.finance_data[2] if self.finance_data[2] else "Доход"
+            index = self.type_combo.findText(current_type)
+            if index >= 0:
+                self.type_combo.setCurrentIndex(index)
+                
+            self.amount_input.setText(str(self.finance_data[3]) if self.finance_data[3] else "")
+            self.date_input.setText(str(self.finance_data[4]) if self.finance_data[4] else "")
+            self.description_input.setText(self.finance_data[5] if self.finance_data[5] else "")
 
         form_layout.addRow("ID точки:*", self.point_id_input)
         form_layout.addRow("Тип:*", self.type_combo)
