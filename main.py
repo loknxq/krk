@@ -20,7 +20,7 @@ def main():
     
     # Устанавливаем иконку приложения
     try:
-        app.setWindowIcon(QIcon('icon.png'))
+        app.setWindowIcon(QIcon('../icon.png'))
     except:
         pass
     

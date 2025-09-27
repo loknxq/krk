@@ -33,13 +33,6 @@ class MainWindow(QMainWindow):
         title.setFont(QFont("Arial", 60, QFont.Bold))
         layout.addWidget(title)
 
-        # # Подзаголовок
-        # subtitle = QLabel("Управление ресторанами быстрого питания")
-        # subtitle.setAlignment(Qt.AlignCenter)
-        # subtitle.setFont(QFont("Arial", 12))
-        # layout.addWidget(subtitle)
-
-        # layout.addSpacing(20)
 
         # Сетка кнопок меню
         grid_layout = QGridLayout()
@@ -65,13 +58,13 @@ class MainWindow(QMainWindow):
 
         layout.addLayout(grid_layout)
 
-        # Статус бар
+        # Статус
         self.status_label = QLabel("Статус: Не подключено к БД")
         self.status_label.setAlignment(Qt.AlignCenter)
         self.status_label.setFont(QFont("Arial", 10))
         layout.addWidget(self.status_label)
 
-        # Обновляем статус
+        # Обновление статуса
         self.update_status()
 
     def update_status(self):
@@ -95,8 +88,8 @@ class MainWindow(QMainWindow):
         dialog.exec()
         self.update_status()
 
+# Добавление данных
     def show_add_data(self):
-        """Диалог для добавления данных"""
         if not self.db_manager.is_connected():
             QMessageBox.warning(self, "Ошибка", "Сначала подключитесь к базе данных")
             return
@@ -122,14 +115,14 @@ class MainWindow(QMainWindow):
         dialog = DataViewDialog(self.db_manager, self)
         dialog.exec()
 
+# Статистика
     def refresh_all(self):
-        """Показывает актуальную статистику"""
         if not self.db_manager.is_connected():
             QMessageBox.warning(self, "Ошибка", "Сначала подключитесь к базе данных")
             return
         
         try:
-            # Получаем статистику
+            # Получение статистики
             points_count = self.db_manager.get_points_count()
             employees_count = self.db_manager.get_employees_count()
             products_count = self.db_manager.get_products_count()
@@ -137,10 +130,10 @@ class MainWindow(QMainWindow):
             total_expenses = self.db_manager.get_total_expenses()
             profit = total_revenue - total_expenses
             
-            # Проверяем наличие данных в таблицах
+            # Проверка наличия данных в таблицах
             data_exists = self.db_manager.check_data_exists()
             
-            # Формируем подробное сообщение со статистикой
+            # Сообщение со статистикой
             stats_text = f"""
             <h2>📊 Статистика системы</h2>
             
@@ -167,7 +160,7 @@ class MainWindow(QMainWindow):
             </p>
             """
             
-            # Создаем кастомное диалоговое окно для статистики
+            # Окно для статистики
             dialog = QDialog(self)
             dialog.setWindowTitle("Статистика системы")
             dialog.setMinimumSize(500, 600)
@@ -179,13 +172,13 @@ class MainWindow(QMainWindow):
             stats_label.setWordWrap(True)
             stats_label.setTextFormat(Qt.RichText)
             
-            # Поле для логов (последние 5 записей)
+            # Поле для логов
             logs_label = QLabel("<h3>Последние действия в системе:</h3>")
             logs_text = QTextEdit()
             logs_text.setReadOnly(True)
             logs_text.setMaximumHeight(150)
             
-            # Получаем последние логи
+            # Последние логи
             logs = self.db_manager.get_logs()
             recent_logs = ''.join(logs[-5:]) if logs else "Логи не найдены"
             logs_text.setPlainText(recent_logs)
@@ -227,7 +220,6 @@ class MainWindow(QMainWindow):
         QMessageBox.about(self, "О программе", about_text)
 
     def add_point(self):
-        """Добавляет точку"""
         dialog = AddPointDialog(self)
         if dialog.exec() == QDialog.Accepted:
             data = dialog.get_data()
@@ -240,7 +232,6 @@ class MainWindow(QMainWindow):
                 QMessageBox.warning(self, "Ошибка", "Адрес обязателен для заполнения")
 
     def add_employee(self):
-        """Добавляет сотрудника"""
         dialog = AddEmployeeDialog(self)
         if dialog.exec() == QDialog.Accepted:
             data = dialog.get_data()
@@ -258,7 +249,6 @@ class MainWindow(QMainWindow):
                 QMessageBox.warning(self, "Ошибка", "Все поля обязательны для заполнения")
 
     def add_product(self):
-        """Добавляет продукт"""
         dialog = AddProductDialog(self)
         if dialog.exec() == QDialog.Accepted:
             data = dialog.get_data()
@@ -274,6 +264,7 @@ class MainWindow(QMainWindow):
                     QMessageBox.warning(self, "Ошибка", "Цены должны быть числами")
             else:
                 QMessageBox.warning(self, "Ошибка", "Все поля обязательны для заполнения")
+                
     def add_finance(self):
         dialog = AddFinanceDialog(self.db_manager, self)
         if dialog.exec() == QDialog.Accepted:

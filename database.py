@@ -17,7 +17,6 @@ class DatabaseManager:
         self.setup_logging()
 
     def setup_logging(self):
-        """Настраивает логирование"""
         logging.basicConfig(
             filename='app.log',
             level=logging.INFO,
@@ -26,15 +25,12 @@ class DatabaseManager:
         )
 
     def set_connection_params(self, params: Dict):
-        """Устанавливает параметры подключения"""
         self.connection_params.update(params)
 
     def get_connection_params(self):
-        """Возвращает текущие параметры подключения"""
         return self.connection_params.copy()
 
     def connect(self) -> bool:
-        """Подключается к базе данных"""
         try:
             self.connection = psycopg2.connect(**self.connection_params)
             logging.info("Успешное подключение к БД")
@@ -44,14 +40,12 @@ class DatabaseManager:
             return False
 
     def disconnect(self):
-        """Отключается от базы данных"""
         if self.connection:
             self.connection.close()
             self.connection = None
             logging.info("Отключение от БД")
 
     def is_connected(self) -> bool:
-        """Проверяет подключение к БД"""
         if self.connection:
             try:
                 cursor = self.connection.cursor()
@@ -66,7 +60,6 @@ class DatabaseManager:
 
 
     def recreate_tables(self) -> bool:
-        """Пересоздает таблицы"""
         try:
             if not self.is_connected():
                 if not self.connect():
@@ -145,7 +138,6 @@ class DatabaseManager:
             return False
 
     def insert_sample_data(self) -> bool:
-        """Вставляет тестовые данные"""
         try:
             if not self.is_connected():
                 if not self.connect():
@@ -153,7 +145,6 @@ class DatabaseManager:
 
             cursor = self.connection.cursor()
 
-            # Вставляем тестовые данные
             sample_data = [
                 # Точки
                 "INSERT INTO points (address, phone_number) VALUES ('ул. Главная, 1', '+7 (495) 111-22-33')",
@@ -251,7 +242,6 @@ class DatabaseManager:
             for query in sample_data:
                 cursor.execute(query)
 
-            # Назначаем менеджеров
             cursor.execute("UPDATE points SET manager_id = 1 WHERE point_id = 1")
             cursor.execute("UPDATE points SET manager_id = 4 WHERE point_id = 2")
 
@@ -265,51 +255,8 @@ class DatabaseManager:
             if self.connection:
                 self.connection.rollback()
             return False
-    def clear_tables(self) -> bool:
-    #Очищает все таблицы (удаляет данные, но не удаляет таблицы
-        try:
-            if not self.is_connected():
-                if not self.connect():
-                    return False
 
-            cursor = self.connection.cursor()
-
-            # Очищаем таблицы в правильном порядке из-за внешних ключей
-            clear_scripts = [
-                "DELETE FROM transactions", 
-                "DELETE FROM employees",
-                "DELETE FROM products",
-                "DELETE FROM points"
-            ]
-
-            for script in clear_scripts:
-                cursor.execute(script)
-
-            # Сбрасываем последовательности (auto-increment)
-            sequences = [
-                "points_point_id_seq",
-                "employees_employee_id_seq", 
-                "products_product_id_seq",
-                "transactions_transaction_id_seq"
-            ]
-
-            for sequence in sequences:
-                cursor.execute(f"ALTER SEQUENCE {sequence} RESTART WITH 1")
-
-            self.connection.commit()
-            cursor.close()
-            logging.info("Все таблицы очищены")
-            return True
-
-        except Exception as e:
-            logging.error(f"Ошибка очистки таблиц: {str(e)}")
-            if self.connection:
-                self.connection.rollback()
-            return False
-
-    # МЕТОДЫ ДЛЯ ПОЛУЧЕНИЯ ДАННЫХ
     def get_points(self) -> List[Tuple]:
-        """Получает все точки"""
         try:
             if not self.is_connected():
                 if not self.connect():
@@ -324,7 +271,6 @@ class DatabaseManager:
             return []
 
     def get_employees(self) -> List[Tuple]:
-        """Получает всех сотрудников"""
         try:
             if not self.is_connected():
                 if not self.connect():
@@ -339,7 +285,6 @@ class DatabaseManager:
             return []
 
     def get_products(self) -> List[Tuple]:
-        """Получает все продукты"""
         try:
             if not self.is_connected():
                 if not self.connect():
@@ -354,7 +299,6 @@ class DatabaseManager:
             return []
 
     def get_finances(self) -> List[Tuple]:
-        """Получает все финансовые операции"""
         try:
             if not self.is_connected():
                 if not self.connect():
@@ -370,7 +314,6 @@ class DatabaseManager:
 
     # МЕТОДЫ ДЛЯ ДОБАВЛЕНИЯ ДАННЫХ
     def insert_point(self, address: str, phone_number: str = None) -> bool:
-        """Добавляет новую точку"""
         try:
             if not self.is_connected():
                 if not self.connect():
@@ -392,7 +335,6 @@ class DatabaseManager:
             return False
 
     def insert_employee(self, full_name: str, position: str, salary: float, schedule: str, point_id: int) -> bool:
-        """Добавляет нового сотрудника"""
         try:
             if not self.is_connected():
                 if not self.connect():
@@ -414,7 +356,6 @@ class DatabaseManager:
             return False
 
     def insert_product(self, name: str, category: str, cost_price: float, selling_price: float) -> bool:
-        """Добавляет новый продукт"""
         try:
             if not self.is_connected():
                 if not self.connect():
@@ -436,7 +377,6 @@ class DatabaseManager:
             return False
 
     def insert_transaction(self, point_id: int, type: str, amount: float, date: str, description: str = None) -> bool:
-        """Добавляет новую финансовую операцию"""
         try:
             if not self.is_connected():
                 if not self.connect():
@@ -457,9 +397,7 @@ class DatabaseManager:
                 self.connection.rollback()
             return False
 
-    # МЕТОДЫ ДЛЯ УДАЛЕНИЯ ДАННЫХ
     def delete_point(self, point_id: int) -> bool:
-        """Удаляет точку по ID"""
         try:
             if not self.is_connected():
                 if not self.connect():
@@ -478,7 +416,6 @@ class DatabaseManager:
             return False
 
     def delete_employee(self, employee_id: int) -> bool:
-        """Удаляет сотрудника по ID"""
         try:
             if not self.is_connected():
                 if not self.connect():
@@ -497,7 +434,6 @@ class DatabaseManager:
             return False
 
     def delete_product(self, product_id: int) -> bool:
-        """Удаляет продукт по ID"""
         try:
             if not self.is_connected():
                 if not self.connect():
@@ -515,7 +451,6 @@ class DatabaseManager:
                 self.connection.rollback()
             return False
     def delete_transaction(self, transaction_id: int) -> bool:
-        """Удаляет финансовую операцию по ID"""
         try:
             if not self.is_connected():
                 if not self.connect():
@@ -535,7 +470,6 @@ class DatabaseManager:
 
     # МЕТОДЫ ДЛЯ ПОЛУЧЕНИЯ СТАТИСТИКИ
     def get_points_count(self) -> int:
-        """Возвращает количество точек"""
         try:
             if not self.is_connected():
                 if not self.connect():
@@ -550,7 +484,6 @@ class DatabaseManager:
             return 0
 
     def get_employees_count(self) -> int:
-        """Возвращает количество сотрудников"""
         try:
             if not self.is_connected():
                 if not self.connect():
@@ -565,7 +498,6 @@ class DatabaseManager:
             return 0
 
     def get_products_count(self) -> int:
-        """Возвращает количество продуктов"""
         try:
             if not self.is_connected():
                 if not self.connect():
@@ -580,7 +512,6 @@ class DatabaseManager:
             return 0
 
     def get_total_revenue(self) -> float:
-        """Возвращает общий доход"""
         try:
             if not self.is_connected():
                 if not self.connect():
@@ -595,7 +526,6 @@ class DatabaseManager:
             return 0.0
 
     def get_total_expenses(self) -> float:
-        """Возвращает общие расходы"""
         try:
             if not self.is_connected():
                 if not self.connect():
@@ -611,7 +541,6 @@ class DatabaseManager:
 
     # МЕТОД ДЛЯ ПОЛУЧЕНИЯ ЛОГОВ
     def get_logs(self) -> List[str]:
-        """Читает логи из файла"""
         try:
             with open('app.log', 'r', encoding='utf-8') as f:
                 return f.readlines()
@@ -619,9 +548,7 @@ class DatabaseManager:
             logging.error(f"Ошибка чтения логов: {str(e)}")
             return ["Логи не найдены"]
 
-    # МЕТОД ДЛЯ ПРОВЕРКИ СУЩЕСТВОВАНИЯ ДАННЫХ
     def check_data_exists(self) -> Dict[str, bool]:
-        """Проверяет существование данных в таблицах"""
         result = {
             'points': False,
             'employees': False,
@@ -636,7 +563,6 @@ class DatabaseManager:
             
             cursor = self.connection.cursor()
             
-            # Проверяем каждую таблицу
             cursor.execute("SELECT EXISTS(SELECT 1 FROM points LIMIT 1)")
             result['points'] = cursor.fetchone()[0]
             
@@ -655,7 +581,7 @@ class DatabaseManager:
             logging.error(f"Ошибка проверки данных: {str(e)}")
         
         return result
-    # МЕТОДЫ ДЛЯ РЕДАКТИРОВАНИЯ ДАННЫХ
+
     def update_point(self, point_id: int, address: str, phone_number: str = None) -> bool:
         """Обновляет данные точки"""
         try:
@@ -679,7 +605,6 @@ class DatabaseManager:
             return False
 
     def update_employee(self, employee_id: int, full_name: str, position: str, salary: float, schedule: str, point_id: int) -> bool:
-        """Обновляет данные сотрудника"""
         try:
             if not self.is_connected():
                 if not self.connect():
@@ -701,7 +626,6 @@ class DatabaseManager:
             return False
 
     def update_product(self, product_id: int, name: str, category: str, cost_price: float, selling_price: float) -> bool:
-        """Обновляет данные продукта"""
         try:
             if not self.is_connected():
                 if not self.connect():
@@ -723,7 +647,6 @@ class DatabaseManager:
             return False
 
     def update_transaction(self, transaction_id: int, point_id: int, type: str, amount: float, date: str, description: str = None) -> bool:
-        """Обновляет финансовую операцию"""
         try:
             if not self.is_connected():
                 if not self.connect():
@@ -744,9 +667,7 @@ class DatabaseManager:
                 self.connection.rollback()
             return False
 
-    # МЕТОДЫ ДЛЯ ПОЛУЧЕНИЯ КОНКРЕТНЫХ ЗАПИСЕЙ
     def get_point_by_id(self, point_id: int) -> Tuple:
-        """Получает точку по ID"""
         try:
             if not self.is_connected():
                 if not self.connect():
@@ -761,7 +682,6 @@ class DatabaseManager:
             return None
 
     def get_employee_by_id(self, employee_id: int) -> Tuple:
-        """Получает сотрудника по ID"""
         try:
             if not self.is_connected():
                 if not self.connect():
@@ -776,7 +696,6 @@ class DatabaseManager:
             return None
 
     def get_product_by_id(self, product_id: int) -> Tuple:
-        """Получает продукт по ID"""
         try:
             if not self.is_connected():
                 if not self.connect():
@@ -791,7 +710,6 @@ class DatabaseManager:
             return None
 
     def get_transaction_by_id(self, transaction_id: int) -> Tuple:
-        """Получает финансовую операцию по ID"""
         try:
             if not self.is_connected():
                 if not self.connect():

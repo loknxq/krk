@@ -35,8 +35,8 @@ class EditDataDialog(QDialog):
 
         self.setLayout(layout)
 
+# Редактирование строки по ID
     def edit_row(self):
-        """Редактирование строки по ID"""
         id, ok = QInputDialog.getInt(self, "Изменение строки", 
                                 f"Введите ID строки для изменения в таблице '{self.table_name}':",
                                 1, 1, 1000000, 1)
@@ -45,8 +45,8 @@ class EditDataDialog(QDialog):
             self.row_id = id
             self.accept()
 
+# Удаление строки по ID
     def delete_row(self):
-        """Удаление строки по ID"""
         id, ok = QInputDialog.getInt(self, "Удаление строки",
                                 f"Введите ID строки для удаления из таблицы '{self.table_name}':",
                                 1, 1, 1000000, 1)
@@ -70,7 +70,6 @@ class ConnectionDialog(QDialog):
     def setup_ui(self):
         layout = QVBoxLayout()
 
-        # Форма ввода параметров
         form_layout = QFormLayout()
 
         self.host_input = QLineEdit()
@@ -93,15 +92,12 @@ class ConnectionDialog(QDialog):
 
         self.connect_btn = QPushButton("Подключиться")
         self.recreate_btn = QPushButton("Управление таблицами")
-        # self.env_btn = QPushButton("Взять из окружения")
 
         self.connect_btn.clicked.connect(self.connect)
         self.recreate_btn.clicked.connect(self.recreate_tables)
-        # self.env_btn.clicked.connect(self.load_from_env)
 
         buttons_layout.addWidget(self.connect_btn)
         buttons_layout.addWidget(self.recreate_btn)
-        # buttons_layout.addWidget(self.env_btn)
 
         layout.addLayout(buttons_layout)
 
@@ -140,7 +136,6 @@ class ConnectionDialog(QDialog):
             self.status_label.setStyleSheet("color: #d9534f; font-weight: bold;")
 
     def recreate_tables(self):
-        """Открывает диалог выбора действия с таблицами"""
         dialog = RecreateTablesDialog(self.db_manager, self)
         if dialog.exec() == QDialog.Accepted:
             action_type = dialog.get_action_type()
@@ -151,14 +146,12 @@ class ConnectionDialog(QDialog):
                 self.recreate_tables_action()
 
     def sample_data_action(self):
-        """Вставляет тестовые данные"""
         if self.db_manager.insert_sample_data():
             QMessageBox.information(self, "Успех", "Тестовые данные успешно добавлены")
         else:
             QMessageBox.warning(self, "Ошибка", "Не удалось добавить тестовые данные")
 
     def recreate_tables_action(self):
-        """Полностью пересоздает таблицы"""
         if self.db_manager.recreate_tables():
             QMessageBox.information(self, "Успех", "Таблицы успешно пересозданы")
         else:
@@ -205,10 +198,10 @@ class DataViewDialog(QDialog):
     def setup_ui(self):
         layout = QVBoxLayout()
 
-        # Создаем вкладки для каждой таблицы
+        # Вкладки для каждой таблицы
         self.tabs = QTabWidget()
 
-        # Создаем вкладки с кнопками редактирования
+        # Кнопки редактирования
         self.points_tab = self.create_table_tab("Точки", ["ID", "Адрес", "Телефон", "Менеджер ID"])
         self.employees_tab = self.create_table_tab("Сотрудники", ["ID", "ФИО", "Должность", "Зарплата", "График", "Точка ID"])
         self.products_tab = self.create_table_tab("Продукты", ["ID", "Название", "Категория", "Себестоимость", "Цена продажи"])
@@ -221,7 +214,6 @@ class DataViewDialog(QDialog):
 
         layout.addWidget(self.tabs)
         
-        # Кнопка обновления данных
         refresh_btn = QPushButton("🔄 Обновить данные")
         refresh_btn.clicked.connect(self.load_data)
         layout.addWidget(refresh_btn)
@@ -232,7 +224,6 @@ class DataViewDialog(QDialog):
         widget = QWidget()
         layout = QVBoxLayout(widget)
 
-        # Заголовок с кнопкой редактирования
         header_layout = QHBoxLayout()
         header_layout.addWidget(QLabel(f"Таблица: {title}"))
         
@@ -252,14 +243,12 @@ class DataViewDialog(QDialog):
         return widget
 
     def open_edit_dialog(self, table_name):
-        """Открывает диалог редактирования для конкретной таблицы"""
         dialog = EditDataDialog(self.db_manager, table_name, self)
         if dialog.exec() == QDialog.Accepted:
             action_type, row_id = dialog.get_action_info()
             self.handle_table_action(table_name, action_type, row_id)
 
     def handle_table_action(self, table_name, action_type, row_id):
-        """Обрабатывает действия с таблицами"""
         try:
             if action_type == 'delete':
                 success = False
@@ -370,7 +359,6 @@ class DataViewDialog(QDialog):
             QMessageBox.warning(self, "Ошибка", f"Ошибка: {str(e)}")
 
     def load_data(self):
-        """Загружает данные в таблицы"""
         try:
             # Получаем все таблицы
             for i in range(self.tabs.count()):
@@ -647,16 +635,12 @@ class RecreateTablesDialog(QDialog):
         label.setAlignment(Qt.AlignCenter)
         layout.addWidget(label)
 
-        # Кнопки действий
-        # self.clear_btn = QPushButton("🗑️ Очистить таблицы (удалить все данные)")
         self.sample_data_btn = QPushButton("📊 Вставить тестовые данные")
         self.recreate_btn = QPushButton("🔄 Пересоздать таблицы")
 
-        # self.clear_btn.clicked.connect(lambda: self.accept_with_action('clear'))
         self.sample_data_btn.clicked.connect(lambda: self.accept_with_action('sample_data'))
         self.recreate_btn.clicked.connect(lambda: self.accept_with_action('recreate'))
 
-        # layout.addWidget(self.clear_btn)
         layout.addWidget(self.sample_data_btn)
         layout.addWidget(self.recreate_btn)
 
@@ -673,7 +657,7 @@ class RecreateTablesDialog(QDialog):
 
     def get_action_type(self):
         return self.action_type
-# Диалоги для редактирования данных
+
 class EditPointDialog(QDialog):
     def __init__(self, point_data, parent=None):
         super().__init__(parent)
@@ -691,7 +675,6 @@ class EditPointDialog(QDialog):
         self.phone_input = QLineEdit()
         self.manager_id_input = QLineEdit()
 
-        # Заполняем текущие данные
         self.address_input.setText(self.point_data[1] if self.point_data[1] else "")
         self.phone_input.setText(self.point_data[2] if self.point_data[2] else "")
         self.manager_id_input.setText(str(self.point_data[3]) if self.point_data[3] else "")
@@ -741,7 +724,6 @@ class EditEmployeeDialog(QDialog):
         self.schedule_input = QLineEdit()
         self.point_id_input = QLineEdit()
 
-        # Заполняем текущие данные
         self.name_input.setText(self.employee_data[1] if self.employee_data[1] else "")
         self.position_input.setText(self.employee_data[2] if self.employee_data[2] else "")
         self.salary_input.setText(str(self.employee_data[3]) if self.employee_data[3] else "")
@@ -796,7 +778,6 @@ class EditProductDialog(QDialog):
         self.cost_input = QLineEdit()
         self.price_input = QLineEdit()
 
-        # Заполняем текущие данные
         self.name_input.setText(self.product_data[1] if self.product_data[1] else "")
         self.category_input.setText(self.product_data[2] if self.product_data[2] else "")
         self.cost_input.setText(str(self.product_data[3]) if self.product_data[3] else "")
@@ -850,7 +831,6 @@ class EditFinanceDialog(QDialog):
         self.date_input.setPlaceholderText("ГГГГ-ММ-ДД")
         self.description_input = QLineEdit()
 
-        # Заполняем текущие данные
         if self.finance_data:
             self.point_id_input.setText(str(self.finance_data[1]) if self.finance_data[1] else "")
             
