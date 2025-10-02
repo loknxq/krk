@@ -26,15 +26,12 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
         central_widget.setLayout(layout)
 
-        # Заголовок
         title = QLabel("🍟 Крошка Картошка - Система управления")
         title.setAlignment(Qt.AlignCenter)
         title.setObjectName("title")
         title.setFont(QFont("Arial", 60, QFont.Bold))
         layout.addWidget(title)
 
-
-        # Сетка кнопок меню
         grid_layout = QGridLayout()
         grid_layout.setSpacing(15)
         grid_layout.setContentsMargins(20, 20, 20, 20)
@@ -58,13 +55,11 @@ class MainWindow(QMainWindow):
 
         layout.addLayout(grid_layout)
 
-        # Статус
         self.status_label = QLabel("Статус: Не подключено к БД")
         self.status_label.setAlignment(Qt.AlignCenter)
         self.status_label.setFont(QFont("Arial", 10))
         layout.addWidget(self.status_label)
 
-        # Обновление статуса
         self.update_status()
 
     def update_status(self):
@@ -88,7 +83,6 @@ class MainWindow(QMainWindow):
         dialog.exec()
         self.update_status()
 
-# Добавление данных
     def show_add_data(self):
         if not self.db_manager.is_connected():
             QMessageBox.warning(self, "Ошибка", "Сначала подключитесь к базе данных")
@@ -115,14 +109,12 @@ class MainWindow(QMainWindow):
         dialog = DataViewDialog(self.db_manager, self)
         dialog.exec()
 
-# Статистика
     def refresh_all(self):
         if not self.db_manager.is_connected():
             QMessageBox.warning(self, "Ошибка", "Сначала подключитесь к базе данных")
             return
         
         try:
-            # Получение статистики
             points_count = self.db_manager.get_points_count()
             employees_count = self.db_manager.get_employees_count()
             products_count = self.db_manager.get_products_count()
@@ -130,10 +122,8 @@ class MainWindow(QMainWindow):
             total_expenses = self.db_manager.get_total_expenses()
             profit = total_revenue - total_expenses
             
-            # Проверка наличия данных в таблицах
             data_exists = self.db_manager.check_data_exists()
-            
-            # Сообщение со статистикой
+
             stats_text = f"""
             <h2>📊 Статистика системы</h2>
             
@@ -160,30 +150,25 @@ class MainWindow(QMainWindow):
             </p>
             """
             
-            # Окно для статистики
             dialog = QDialog(self)
             dialog.setWindowTitle("Статистика системы")
             dialog.setMinimumSize(500, 600)
             
             layout = QVBoxLayout()
-            
-            # Текст статистики
+
             stats_label = QLabel(stats_text)
             stats_label.setWordWrap(True)
             stats_label.setTextFormat(Qt.RichText)
-            
-            # Поле для логов
+
             logs_label = QLabel("<h3>Последние действия в системе:</h3>")
             logs_text = QTextEdit()
             logs_text.setReadOnly(True)
             logs_text.setMaximumHeight(150)
-            
-            # Последние логи
+
             logs = self.db_manager.get_logs()
             recent_logs = ''.join(logs[-5:]) if logs else "Логи не найдены"
             logs_text.setPlainText(recent_logs)
-            
-            # Кнопки
+
             close_btn = QPushButton("Закрыть")
             close_btn.clicked.connect(dialog.accept)
             

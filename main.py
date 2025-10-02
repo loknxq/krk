@@ -5,7 +5,6 @@ from PySide6.QtGui import QIcon
 from mainwindow import MainWindow
 
 def main():
-    # Настройка логирования
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s',
@@ -18,7 +17,8 @@ def main():
     app = QApplication(sys.argv)
     app.setStyle('Fusion')
     
-    # Устанавливаем иконку приложения
+ 
+
     try:
         app.setWindowIcon(QIcon('../icon.png'))
     except:

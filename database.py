@@ -67,28 +67,85 @@ class DatabaseManager:
 
             cursor = self.connection.cursor()
 
-            # Удаляем существующие таблицы
             tables = ['transactions', 'products', 'employees', 'points']
             for table in tables:
                 cursor.execute(f"DROP TABLE IF EXISTS {table} CASCADE")
 
-            # Создаем таблицы заново
+            # scripts = [
+            #     """
+            #     CREATE TABLE points (
+            #         point_id SERIAL PRIMARY KEY,
+            #         address VARCHAR(200) NOT NULL,
+            #         phone_number VARCHAR(20),
+            #         manager_id INTEGER NULL
+            #     )
+            #     """,
+            #     """
+            #     CREATE TABLE employees (
+            #         employee_id SERIAL PRIMARY KEY,
+            #         full_name VARCHAR(150) NOT NULL,
+            #         position VARCHAR(100) NOT NULL,
+            #         salary DECIMAL(10, 2) NOT NULL CHECK (salary >= 0),
+            #         schedule VARCHAR(50) NOT NULL,
+            #         point_id INTEGER NOT NULL,
+            #         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            #         FOREIGN KEY (point_id) REFERENCES points(point_id) ON DELETE CASCADE
+            #     )
+            #     """,
+            #     """
+            #     ALTER TABLE points
+            #     ADD CONSTRAINT fk_points_manager
+            #     FOREIGN KEY (manager_id) REFERENCES employees(employee_id)
+            #     """,
+            #     """
+            #     CREATE TABLE products (
+            #         product_id SERIAL PRIMARY KEY,
+            #         name VARCHAR(100) NOT NULL,
+            #         category VARCHAR(50) NOT NULL,
+            #         cost_price DECIMAL(10, 2) NOT NULL CHECK (cost_price >= 0),
+            #         selling_price DECIMAL(10, 2) NOT NULL CHECK (selling_price >= 0),
+            #         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            #     )
+            #     """,
+            #     """
+            #     CREATE TABLE transactions (
+            #         transaction_id SERIAL PRIMARY KEY,
+            #         point_id INTEGER NOT NULL,
+            #         type VARCHAR(20) NOT NULL CHECK (type IN ('Доход', 'Расход')),
+            #         amount DECIMAL(12, 2) NOT NULL CHECK (amount >= 0),
+            #         date DATE NOT NULL,
+            #         description TEXT,
+            #         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            #         FOREIGN KEY (point_id) REFERENCES points(point_id) ON DELETE CASCADE
+            #     )
+            #     """
+            # ]
             scripts = [
                 """
                 CREATE TABLE points (
                     point_id SERIAL PRIMARY KEY,
-                    address VARCHAR(200) NOT NULL,
-                    phone_number VARCHAR(20),
+                    address VARCHAR(200) NOT NULL CHECK (length(address) >= 5 AND address ~ '^[А-Яа-я0-9\\s\\.,-]+$'),
+                    phone_number CHAR(11) CHECK (
+                        phone_number IS NULL OR 
+                        (
+                            length(phone_number) 11
+                            phone_number ~ '^8\d{10}$'
+                        )
+                    ),
                     manager_id INTEGER NULL
                 )
                 """,
                 """
                 CREATE TABLE employees (
                     employee_id SERIAL PRIMARY KEY,
-                    full_name VARCHAR(150) NOT NULL,
-                    position VARCHAR(100) NOT NULL,
+                    full_name VARCHAR(150) NOT NULL CHECK (
+                        length(full_name) >= 5 AND 
+                        full_name ~ '^[A-Za-zА-Яа-я\\s\\-]+$' AND
+                        full_name ~ '\\s'  -- должен содержать пробел (имя и фамилия)
+                    ),
+                    position VARCHAR(100) NOT NULL CHECK (length(position) >= 2),
                     salary DECIMAL(10, 2) NOT NULL CHECK (salary >= 0),
-                    schedule VARCHAR(50) NOT NULL,
+                    schedule VARCHAR(50) NOT NULL CHECK (length(schedule) >= 2),
                     point_id INTEGER NOT NULL,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (point_id) REFERENCES points(point_id) ON DELETE CASCADE
@@ -102,10 +159,10 @@ class DatabaseManager:
                 """
                 CREATE TABLE products (
                     product_id SERIAL PRIMARY KEY,
-                    name VARCHAR(100) NOT NULL,
-                    category VARCHAR(50) NOT NULL,
+                    name VARCHAR(100) NOT NULL CHECK (length(name) >= 2),
+                    category VARCHAR(50) NOT NULL CHECK (length(category) >= 2),
                     cost_price DECIMAL(10, 2) NOT NULL CHECK (cost_price >= 0),
-                    selling_price DECIMAL(10, 2) NOT NULL CHECK (selling_price >= 0),
+                    selling_price DECIMAL(10, 2) NOT NULL CHECK (selling_price >= 0 AND selling_price >= cost_price),
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
                 """,
@@ -115,13 +172,13 @@ class DatabaseManager:
                     point_id INTEGER NOT NULL,
                     type VARCHAR(20) NOT NULL CHECK (type IN ('Доход', 'Расход')),
                     amount DECIMAL(12, 2) NOT NULL CHECK (amount >= 0),
-                    date DATE NOT NULL,
+                    date DATE NOT NULL CHECK (date >= '2000-01-01' AND date <= CURRENT_DATE + INTERVAL '1 year'),
                     description TEXT,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (point_id) REFERENCES points(point_id) ON DELETE CASCADE
                 )
                 """
-            ]
+        ]
 
             for script in scripts:
                 cursor.execute(script)
@@ -312,9 +369,11 @@ class DatabaseManager:
             logging.error(f"Ошибка получения финансов: {str(e)}")
             return []
 
-    # МЕТОДЫ ДЛЯ ДОБАВЛЕНИЯ ДАННЫХ
     def insert_point(self, address: str, phone_number: str = None) -> bool:
         try:
+            if phone_number and not self.is_valid_phone(phone_number):
+                logging.error(f"Неверный формат телефона: {phone_number}")
+                return False
             if not self.is_connected():
                 if not self.connect():
                     return False
@@ -333,6 +392,8 @@ class DatabaseManager:
             if self.connection:
                 self.connection.rollback()
             return False
+    def is_valid_phone(phone_number):
+        return (len(phone_number) == 11 and phone_number[0]=='8' and phone_number.isdigit())
 
     def insert_employee(self, full_name: str, position: str, salary: float, schedule: str, point_id: int) -> bool:
         try:
@@ -539,7 +600,6 @@ class DatabaseManager:
             logging.error(f"Ошибка получения общих расходов: {str(e)}")
             return 0.0
 
-    # МЕТОД ДЛЯ ПОЛУЧЕНИЯ ЛОГОВ
     def get_logs(self) -> List[str]:
         try:
             with open('app.log', 'r', encoding='utf-8') as f:
@@ -722,3 +782,26 @@ class DatabaseManager:
         except Exception as e:
             logging.error(f"Ошибка получения финансовой операции: {str(e)}")
             return None
+def insert_point(self, address: str, phone_number: str = None) -> bool:
+    """Добавляет новую точку с проверкой телефона"""
+    try: 
+        if not self.is_connected():
+            if not self.connect():
+                return False
+        
+        cursor = self.connection.cursor()
+        cursor.execute(
+            "INSERT INTO points (address, phone_number) VALUES (%s, %s)",
+            (address, phone_number)
+        )
+        self.connection.commit()
+        cursor.close()
+        logging.info(f"Добавлена точка: {address}")
+        return True
+    except Exception as e:
+        logging.error(f"Ошибка добавления точки: {str(e)}")
+        if self.connection:
+            self.connection.rollback()
+        return False
+
+

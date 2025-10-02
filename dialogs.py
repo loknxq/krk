@@ -5,7 +5,6 @@ from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QFormLayout,
 from PySide6.QtCore import Qt
 import logging
 
-# Удаление и редактированние
 class EditDataDialog(QDialog):
     def __init__(self, db_manager, table_name, parent=None):
         super().__init__(parent)
@@ -35,7 +34,6 @@ class EditDataDialog(QDialog):
 
         self.setLayout(layout)
 
-# Редактирование строки по ID
     def edit_row(self):
         id, ok = QInputDialog.getInt(self, "Изменение строки", 
                                 f"Введите ID строки для изменения в таблице '{self.table_name}':",
@@ -45,7 +43,6 @@ class EditDataDialog(QDialog):
             self.row_id = id
             self.accept()
 
-# Удаление строки по ID
     def delete_row(self):
         id, ok = QInputDialog.getInt(self, "Удаление строки",
                                 f"Введите ID строки для удаления из таблицы '{self.table_name}':",
@@ -87,7 +84,6 @@ class ConnectionDialog(QDialog):
 
         layout.addLayout(form_layout)
 
-        # Кнопки действий
         buttons_layout = QHBoxLayout()
 
         self.connect_btn = QPushButton("Подключиться")
@@ -101,7 +97,6 @@ class ConnectionDialog(QDialog):
 
         layout.addLayout(buttons_layout)
 
-        # Статус
         self.status_label = QLabel("😔 Не подключено")
         self.status_label.setAlignment(Qt.AlignCenter)
         self.status_label.setStyleSheet("color: #d9534f; font-weight: bold;")
@@ -198,10 +193,8 @@ class DataViewDialog(QDialog):
     def setup_ui(self):
         layout = QVBoxLayout()
 
-        # Вкладки для каждой таблицы
         self.tabs = QTabWidget()
 
-        # Кнопки редактирования
         self.points_tab = self.create_table_tab("Точки", ["ID", "Адрес", "Телефон", "Менеджер ID"])
         self.employees_tab = self.create_table_tab("Сотрудники", ["ID", "ФИО", "Должность", "Зарплата", "График", "Точка ID"])
         self.products_tab = self.create_table_tab("Продукты", ["ID", "Название", "Категория", "Себестоимость", "Цена продажи"])
@@ -360,7 +353,6 @@ class DataViewDialog(QDialog):
 
     def load_data(self):
         try:
-            # Получаем все таблицы
             for i in range(self.tabs.count()):
                 tab_widget = self.tabs.widget(i)
                 table = tab_widget.findChild(QTableWidget)
@@ -452,7 +444,7 @@ class AddPointDialog(QDialog):
         form_layout = QFormLayout()
 
         self.address_input = QLineEdit()
-        self.phone_input = QLineEdit()
+        self.phone_input = QLineEdit('8XXXXXXXXXX')
 
         form_layout.addRow("Адрес:*", self.address_input)
         form_layout.addRow("Телефон:", self.phone_input)
