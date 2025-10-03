@@ -1,8 +1,10 @@
 import psycopg2
 import logging
 import os
+import re
 from datetime import datetime
 from typing import List, Tuple, Optional, Dict
+from string import ascii_letters
 
 class DatabaseManager:
     def __init__(self):
@@ -392,15 +394,26 @@ class DatabaseManager:
             if self.connection:
                 self.connection.rollback()
             return False
-    def is_valid_phone(phone_number):
-        return (len(phone_number) == 11 and phone_number[0]=='8' and phone_number.isdigit())
+    def is_valid_phone(self,phone_number):
+        pattern = r'^(\+7|7|8)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$'
+        return bool(re.match(pattern, phone_number))
+    def is_valid_ru_letters(self, name):
+        for i in name:
+            if i in ascii_letters:
+                return False
+        return True
+    def is_valid_schedule(self,schedule):
+        pattern = r'[1-7]/[0-6]'
+        return bool(re.match(pattern,schedule))
 
     def insert_employee(self, full_name: str, position: str, salary: float, schedule: str, point_id: int) -> bool:
         try:
             if not self.is_connected():
                 if not self.connect():
                     return False
-            
+            if not self.is_valid_ru_letters(full_name) or not self.is_valid_schedule(schedule) or not self.is_valid_ru_letters(position):
+                logging.error('Ошибка добавления сотрудника')
+                return False
             cursor = self.connection.cursor()
             cursor.execute(
                 "INSERT INTO employees (full_name, position, salary, schedule, point_id) VALUES (%s, %s, %s, %s, %s)",
@@ -421,7 +434,9 @@ class DatabaseManager:
             if not self.is_connected():
                 if not self.connect():
                     return False
-            
+            if not self.is_valid_ru_letters(name) or not self.is_valid_ru_letters(category):
+                logging.error("Ошибка добавления продукта")
+                return False
             cursor = self.connection.cursor()
             cursor.execute(
                 "INSERT INTO products (name, category, cost_price, selling_price) VALUES (%s, %s, %s, %s)",
@@ -442,7 +457,9 @@ class DatabaseManager:
             if not self.is_connected():
                 if not self.connect():
                     return False
-            
+            if not self.is_valid_ru_letters(description):
+                logging.error(f'Неправильный формат:{description}')
+                return False
             cursor = self.connection.cursor()
             cursor.execute(
                 "INSERT INTO transactions (point_id, type, amount, date, description) VALUES (%s, %s, %s, %s, %s)",
@@ -803,5 +820,3 @@ def insert_point(self, address: str, phone_number: str = None) -> bool:
         if self.connection:
             self.connection.rollback()
         return False
-
-
