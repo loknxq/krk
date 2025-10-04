@@ -20,8 +20,8 @@ class EditDataDialog(QDialog):
         label = QLabel(f"Выберите действие для таблицы '{self.table_name}':")
         layout.addWidget(label)
 
-        self.edit_btn = QPushButton("✏️ Изменить строку")
-        self.delete_btn = QPushButton("🗑️ Удалить строку")
+        self.edit_btn = QPushButton("Изменить строку")
+        self.delete_btn = QPushButton("Удалить строку")
         self.cancel_btn = QPushButton("Отмена")
 
         self.edit_btn.clicked.connect(self.edit_row)
@@ -97,7 +97,7 @@ class ConnectionDialog(QDialog):
 
         layout.addLayout(buttons_layout)
 
-        self.status_label = QLabel("😔 Не подключено")
+        self.status_label = QLabel("Не подключено")
         self.status_label.setAlignment(Qt.AlignCenter)
         self.status_label.setStyleSheet("color: #d9534f; font-weight: bold;")
         layout.addWidget(self.status_label)
@@ -124,10 +124,10 @@ class ConnectionDialog(QDialog):
         self.db_manager.set_connection_params(params)
 
         if self.db_manager.connect():
-            self.status_label.setText("🌞 Подключено успешно")
+            self.status_label.setText("Подключено успешно")
             self.status_label.setStyleSheet("color: #90cb25; font-weight: bold;")
         else:
-            self.status_label.setText("😠 Ошибка подключения")
+            self.status_label.setText("Ошибка подключения")
             self.status_label.setStyleSheet("color: #d9534f; font-weight: bold;")
 
     def recreate_tables(self):
@@ -207,7 +207,7 @@ class DataViewDialog(QDialog):
 
         layout.addWidget(self.tabs)
         
-        refresh_btn = QPushButton("🔄 Обновить данные")
+        refresh_btn = QPushButton("Обновить данные")
         refresh_btn.clicked.connect(self.load_data)
         layout.addWidget(refresh_btn)
 
@@ -220,7 +220,7 @@ class DataViewDialog(QDialog):
         header_layout = QHBoxLayout()
         header_layout.addWidget(QLabel(f"Таблица: {title}"))
         
-        edit_btn = QPushButton("✏️ Редактировать")
+        edit_btn = QPushButton("Редактировать")
         edit_btn.clicked.connect(lambda: self.open_edit_dialog(title))
         header_layout.addWidget(edit_btn)
         header_layout.addStretch()
@@ -402,10 +402,10 @@ class AddDataDialog(QDialog):
         label = QLabel("Выберите тип данных для добавления:")
         layout.addWidget(label)
 
-        self.point_btn = QPushButton("➕ Добавить точку")
-        self.employee_btn = QPushButton("👨‍💼 Добавить сотрудника")
-        self.product_btn = QPushButton("🍟 Добавить продукт")
-        self.finances_btn = QPushButton("💰 Добавить финансовую операцию")
+        self.point_btn = QPushButton("Добавить точку")
+        self.employee_btn = QPushButton("Добавить сотрудника")
+        self.product_btn = QPushButton("Добавить продукт")
+        self.finances_btn = QPushButton("Добавить финансовую операцию")
 
         self.point_btn.clicked.connect(lambda: self.accept_with_type('point'))
         self.employee_btn.clicked.connect(lambda: self.accept_with_type('employee'))
@@ -444,7 +444,7 @@ class AddPointDialog(QDialog):
         form_layout = QFormLayout()
 
         self.address_input = QLineEdit()
-        self.phone_input = QLineEdit('8XXXXXXXXXX')
+        self.phone_input = QLineEdit()
 
         form_layout.addRow("Адрес:*", self.address_input)
         form_layout.addRow("Телефон:", self.phone_input)
@@ -627,8 +627,8 @@ class RecreateTablesDialog(QDialog):
         label.setAlignment(Qt.AlignCenter)
         layout.addWidget(label)
 
-        self.sample_data_btn = QPushButton("📊 Вставить тестовые данные")
-        self.recreate_btn = QPushButton("🔄 Пересоздать таблицы")
+        self.sample_data_btn = QPushButton("Вставить тестовые данные")
+        self.recreate_btn = QPushButton("Пересоздать таблицы")
 
         self.sample_data_btn.clicked.connect(lambda: self.accept_with_action('sample_data'))
         self.recreate_btn.clicked.connect(lambda: self.accept_with_action('recreate'))

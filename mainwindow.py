@@ -11,7 +11,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.db_manager = DatabaseManager()
-        self.setWindowTitle("🍟 Система управления 'Крошка Картошка'")
+        self.setWindowTitle("Система управления 'Крошка Картошка'")
         self.setMinimumSize(900, 650)
         self.setup_ui()
         self.apply_styles()
@@ -26,7 +26,7 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
         central_widget.setLayout(layout)
 
-        title = QLabel("🍟 Крошка Картошка - Система управления")
+        title = QLabel("Крошка Картошка - Система управления")
         title.setAlignment(Qt.AlignCenter)
         title.setObjectName("title")
         title.setFont(QFont("Arial", 60, QFont.Bold))
@@ -37,12 +37,12 @@ class MainWindow(QMainWindow):
         grid_layout.setContentsMargins(20, 20, 20, 20)
 
         buttons_info = [
-            ("📊 Логи", self.show_logger, 0, 0),
-            ("🔌 Подключение к БД", self.show_connection_dialog, 0, 1),
-            ("➕ Добавить данные", self.show_add_data, 1, 0),
-            ("👀 Просмотр данных", self.show_view_data, 1, 1),
-            ("📈 Статистика", self.refresh_all, 2, 0),
-            ("ℹ️ О программе", self.show_about, 2, 1)
+            ("Логи", self.show_logger, 0, 0),
+            ("Подключение к БД", self.show_connection_dialog, 0, 1),
+            ("Добавить данные", self.show_add_data, 1, 0),
+            ("Просмотр данных", self.show_view_data, 1, 1),
+            ("Статистика", self.refresh_all, 2, 0),
+            ("О программе", self.show_about, 2, 1)
         ]
 
         for text, slot, row, col in buttons_info:
@@ -65,13 +65,13 @@ class MainWindow(QMainWindow):
     def update_status(self):
         try:
             if self.db_manager.is_connected():
-                self.status_label.setText("🌞 Статус: Подключено к БД")
+                self.status_label.setText("Статус: Подключено к БД")
                 self.status_label.setStyleSheet("color: #90cb25; font-weight: bold;")
             else:
-                self.status_label.setText("😔 Статус: Не подключено к БД")
+                self.status_label.setText("Статус: Не подключено к БД")
                 self.status_label.setStyleSheet("color: #d9534f; font-weight: bold;")
         except:
-            self.status_label.setText("😠 Ошибка проверки статуса")
+            self.status_label.setText("Ошибка проверки статуса")
             self.status_label.setStyleSheet("color: #d9534f; font-weight: bold;")
 
     def show_logger(self):
@@ -139,10 +139,10 @@ class MainWindow(QMainWindow):
             
             <h3>Наличие данных в таблицах:</h3>
             <ul>
-                <li>📍 Точки: {'✅ Есть данные' if data_exists['points'] else '❌ Нет данных'}</li>
-                <li>👥 Сотрудники: {'✅ Есть данные' if data_exists['employees'] else '❌ Нет данных'}</li>
-                <li>🍟 Продукты: {'✅ Есть данные' if data_exists['products'] else '❌ Нет данных'}</li>
-                <li>💰 Финансы: {'✅ Есть данные' if data_exists['transactions'] else '❌ Нет данных'}</li>
+                <li>Точки: {'Есть данные' if data_exists['points'] else 'Нет данных'}</li>
+                <li>Сотрудники: {'Есть данные' if data_exists['employees'] else 'Нет данных'}</li>
+                <li>Продукты: {'Есть данные' if data_exists['products'] else 'Нет данных'}</li>
+                <li>Финансы: {'Есть данные' if data_exists['transactions'] else 'Нет данных'}</li>
             </ul>
             
             <p style='color: #fda601; font-weight: bold;'>
@@ -186,7 +186,7 @@ class MainWindow(QMainWindow):
 
     def show_about(self):
         about_text = """
-        <h2>🍟 Крошка Картошка</h2>
+        <h2>Крошка Картошка</h2>
         <p><b>Система управления ресторанами быстрого питания</b></p>
         
         <p>Версия: 1.0</p>

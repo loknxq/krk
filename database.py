@@ -60,7 +60,6 @@ class DatabaseManager:
                 return False
         return False
 
-
     def recreate_tables(self) -> bool:
         try:
             if not self.is_connected():
@@ -73,55 +72,6 @@ class DatabaseManager:
             for table in tables:
                 cursor.execute(f"DROP TABLE IF EXISTS {table} CASCADE")
 
-            # scripts = [
-            #     """
-            #     CREATE TABLE points (
-            #         point_id SERIAL PRIMARY KEY,
-            #         address VARCHAR(200) NOT NULL,
-            #         phone_number VARCHAR(20),
-            #         manager_id INTEGER NULL
-            #     )
-            #     """,
-            #     """
-            #     CREATE TABLE employees (
-            #         employee_id SERIAL PRIMARY KEY,
-            #         full_name VARCHAR(150) NOT NULL,
-            #         position VARCHAR(100) NOT NULL,
-            #         salary DECIMAL(10, 2) NOT NULL CHECK (salary >= 0),
-            #         schedule VARCHAR(50) NOT NULL,
-            #         point_id INTEGER NOT NULL,
-            #         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            #         FOREIGN KEY (point_id) REFERENCES points(point_id) ON DELETE CASCADE
-            #     )
-            #     """,
-            #     """
-            #     ALTER TABLE points
-            #     ADD CONSTRAINT fk_points_manager
-            #     FOREIGN KEY (manager_id) REFERENCES employees(employee_id)
-            #     """,
-            #     """
-            #     CREATE TABLE products (
-            #         product_id SERIAL PRIMARY KEY,
-            #         name VARCHAR(100) NOT NULL,
-            #         category VARCHAR(50) NOT NULL,
-            #         cost_price DECIMAL(10, 2) NOT NULL CHECK (cost_price >= 0),
-            #         selling_price DECIMAL(10, 2) NOT NULL CHECK (selling_price >= 0),
-            #         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            #     )
-            #     """,
-            #     """
-            #     CREATE TABLE transactions (
-            #         transaction_id SERIAL PRIMARY KEY,
-            #         point_id INTEGER NOT NULL,
-            #         type VARCHAR(20) NOT NULL CHECK (type IN ('Доход', 'Расход')),
-            #         amount DECIMAL(12, 2) NOT NULL CHECK (amount >= 0),
-            #         date DATE NOT NULL,
-            #         description TEXT,
-            #         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            #         FOREIGN KEY (point_id) REFERENCES points(point_id) ON DELETE CASCADE
-            #     )
-            #     """
-            # ]
             scripts = [
                 """
                 CREATE TABLE points (
@@ -130,8 +80,8 @@ class DatabaseManager:
                     phone_number CHAR(11) CHECK (
                         phone_number IS NULL OR 
                         (
-                            length(phone_number) 11
-                            phone_number ~ '^8\d{10}$'
+                            length(phone_number) = 11 AND
+                            phone_number ~ '^8\\d{10}$'
                         )
                     ),
                     manager_id INTEGER NULL
@@ -180,7 +130,7 @@ class DatabaseManager:
                     FOREIGN KEY (point_id) REFERENCES points(point_id) ON DELETE CASCADE
                 )
                 """
-        ]
+            ]
 
             for script in scripts:
                 cursor.execute(script)
@@ -206,9 +156,9 @@ class DatabaseManager:
 
             sample_data = [
                 # Точки
-                "INSERT INTO points (address, phone_number) VALUES ('ул. Главная, 1', '+7 (495) 111-22-33')",
-                "INSERT INTO points (address, phone_number) VALUES ('пр. Мира, 45', '+7 (495) 222-33-44')",
-                "INSERT INTO points (address, phone_number) VALUES ('ул. Рабочая, 12', '+7 (495) 333-44-55')",
+                "INSERT INTO points (address, phone_number) VALUES ('ул. Главная, 1', '84951112233')",
+                "INSERT INTO points (address, phone_number) VALUES ('пр. Мира, 45', '84952223344')",
+                "INSERT INTO points (address, phone_number) VALUES ('ул. Рабочая, 12', '84953334455')",
 
                 # Сотрудники
                 "INSERT INTO employees (full_name, position, salary, schedule, point_id) VALUES ('Иванов Иван Иванович', 'администратор', 50000.00, '5/2', 1)",
@@ -371,10 +321,24 @@ class DatabaseManager:
             logging.error(f"Ошибка получения финансов: {str(e)}")
             return []
 
+    def is_valid_phone(self, phone_number):
+        pattern = r'^(\+7|7|8)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$'
+        return bool(re.match(pattern, phone_number))
+    
+    def is_valid_ru_letters(self, name):
+        for i in name:
+            if i in ascii_letters:
+                return False
+        return True
+    
+    def is_valid_schedule(self, schedule):
+        pattern = r'[1-7]/[0-6]'
+        return bool(re.match(pattern, schedule))
+
     def insert_point(self, address: str, phone_number: str = None) -> bool:
         try:
-            if phone_number and not self.is_valid_phone(phone_number):
-                logging.error(f"Неверный формат телефона: {phone_number}")
+            if not self.is_valid_phone(phone_number) or not self.is_valid_ru_letters(address):
+                logging.error("Неверный формат")
                 return False
             if not self.is_connected():
                 if not self.connect():
@@ -394,17 +358,6 @@ class DatabaseManager:
             if self.connection:
                 self.connection.rollback()
             return False
-    def is_valid_phone(self,phone_number):
-        pattern = r'^(\+7|7|8)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$'
-        return bool(re.match(pattern, phone_number))
-    def is_valid_ru_letters(self, name):
-        for i in name:
-            if i in ascii_letters:
-                return False
-        return True
-    def is_valid_schedule(self,schedule):
-        pattern = r'[1-7]/[0-6]'
-        return bool(re.match(pattern,schedule))
 
     def insert_employee(self, full_name: str, position: str, salary: float, schedule: str, point_id: int) -> bool:
         try:
@@ -458,7 +411,7 @@ class DatabaseManager:
                 if not self.connect():
                     return False
             if not self.is_valid_ru_letters(description):
-                logging.error(f'Неправильный формат:{description}')
+                logging.error(f'Неверный формат:{description}')
                 return False
             cursor = self.connection.cursor()
             cursor.execute(
@@ -528,6 +481,7 @@ class DatabaseManager:
             if self.connection:
                 self.connection.rollback()
             return False
+
     def delete_transaction(self, transaction_id: int) -> bool:
         try:
             if not self.is_connected():
@@ -546,7 +500,6 @@ class DatabaseManager:
                 self.connection.rollback()
             return False
 
-    # МЕТОДЫ ДЛЯ ПОЛУЧЕНИЯ СТАТИСТИКИ
     def get_points_count(self) -> int:
         try:
             if not self.is_connected():
@@ -660,11 +613,14 @@ class DatabaseManager:
         return result
 
     def update_point(self, point_id: int, address: str, phone_number: str = None) -> bool:
-        """Обновляет данные точки"""
         try:
             if not self.is_connected():
                 if not self.connect():
                     return False
+                
+            if not self.is_valid_phone(phone_number) or not self.is_valid_ru_letters(address):
+                logging.error("Неверный формат")
+                return False
             
             cursor = self.connection.cursor()
             cursor.execute(
@@ -686,6 +642,9 @@ class DatabaseManager:
             if not self.is_connected():
                 if not self.connect():
                     return False
+            if not self.is_valid_ru_letters(full_name) or not self.is_valid_schedule(schedule) or not self.is_valid_ru_letters(position):
+                logging.error('Ошибка добавления сотрудника')
+                return False
             
             cursor = self.connection.cursor()
             cursor.execute(
@@ -707,6 +666,9 @@ class DatabaseManager:
             if not self.is_connected():
                 if not self.connect():
                     return False
+            if not self.is_valid_ru_letters(name) or not self.is_valid_ru_letters(category):
+                logging.error("Ошибка добавления продукта")
+                return False
             
             cursor = self.connection.cursor()
             cursor.execute(
@@ -728,6 +690,9 @@ class DatabaseManager:
             if not self.is_connected():
                 if not self.connect():
                     return False
+            if not self.is_valid_ru_letters(description):
+                logging.error(f'Неверный формат:{description}')
+                return False
             
             cursor = self.connection.cursor()
             cursor.execute(
@@ -799,24 +764,3 @@ class DatabaseManager:
         except Exception as e:
             logging.error(f"Ошибка получения финансовой операции: {str(e)}")
             return None
-def insert_point(self, address: str, phone_number: str = None) -> bool:
-    """Добавляет новую точку с проверкой телефона"""
-    try: 
-        if not self.is_connected():
-            if not self.connect():
-                return False
-        
-        cursor = self.connection.cursor()
-        cursor.execute(
-            "INSERT INTO points (address, phone_number) VALUES (%s, %s)",
-            (address, phone_number)
-        )
-        self.connection.commit()
-        cursor.close()
-        logging.info(f"Добавлена точка: {address}")
-        return True
-    except Exception as e:
-        logging.error(f"Ошибка добавления точки: {str(e)}")
-        if self.connection:
-            self.connection.rollback()
-        return False
