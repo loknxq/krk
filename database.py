@@ -764,3 +764,40 @@ class DatabaseManager:
         except Exception as e:
             logging.error(f"Ошибка получения финансовой операции: {str(e)}")
             return None
+        # В класс DatabaseManager добавить метод:
+    def refresh_connection(self):
+        """Обновить соединение и кэш метаданных"""
+        try:
+            if self.connection:
+                self.connection.rollback()  # Сбрасываем возможные висячие транзакции
+                # Принудительно переподключаемся чтобы обновить метаданные
+                self.disconnect()
+                return self.connect()
+        except Exception as e:
+            logging.error(f"Ошибка обновления соединения: {str(e)}")
+            return False
+        return True
+    # В класс DatabaseManager добавить:
+    def __init__(self):
+        self.connection = None
+        self.connection_params = {
+            'dbname': 'postgres',
+            'user': 'postgres', 
+            'password': "",
+            'host': 'localhost',
+            'port': '5432'
+        }
+        self.structure_changed = False  # Флаг изменений структуры
+        self.setup_logging()
+
+    def mark_structure_changed(self):
+        """Пометить что структура БД была изменена"""
+        self.structure_changed = True
+
+    def clear_structure_changed(self):
+        """Сбросить флаг изменений"""
+        self.structure_changed = False
+
+    def has_structure_changed(self):
+        """Проверить были ли изменения структуры"""
+        return self.structure_changed

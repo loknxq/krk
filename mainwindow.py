@@ -6,6 +6,10 @@ from PySide6.QtGui import QFont
 from database import DatabaseManager
 from dialogs import ConnectionDialog,AddFinanceDialog,  EditFinanceDialog, LoggerDialog, DataViewDialog, AddDataDialog, AddPointDialog, AddEmployeeDialog, AddProductDialog
 from styles import STYLES
+from advanced_features import (
+    AlterTableDialog, AdvancedSelectDialog, TextSearchDialog, 
+    StringFunctionsDialog, JoinWizardDialog
+)
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -32,11 +36,13 @@ class MainWindow(QMainWindow):
         title.setFont(QFont("Arial", 60, QFont.Bold))
         layout.addWidget(title)
 
-        grid_layout = QGridLayout()
-        grid_layout.setSpacing(15)
-        grid_layout.setContentsMargins(20, 20, 20, 20)
+        # Создаем два ряда кнопок
+        grid_layout1 = QGridLayout()
+        grid_layout1.setSpacing(15)
+        grid_layout1.setContentsMargins(20, 20, 20, 20)
 
-        buttons_info = [
+        # Первый ряд - основные функции
+        buttons_info1 = [
             ("Логи", self.show_logger, 0, 0),
             ("Подключение к БД", self.show_connection_dialog, 0, 1),
             ("Добавить данные", self.show_add_data, 1, 0),
@@ -45,15 +51,38 @@ class MainWindow(QMainWindow):
             ("О программе", self.show_about, 2, 1)
         ]
 
-        for text, slot, row, col in buttons_info:
+        for text, slot, row, col in buttons_info1:
             btn = QPushButton(text)
             btn.setObjectName("primary")
             btn.clicked.connect(slot)
-            btn.setMinimumHeight(80)
+            btn.setMinimumHeight(60)
             btn.setMinimumWidth(180)
-            grid_layout.addWidget(btn, row, col)
+            grid_layout1.addWidget(btn, row, col)
 
-        layout.addLayout(grid_layout)
+        layout.addLayout(grid_layout1)
+
+        # Второй ряд - расширенные функции (новые)
+        grid_layout2 = QGridLayout()
+        grid_layout2.setSpacing(10)
+        grid_layout2.setContentsMargins(20, 10, 20, 20)
+
+        advanced_buttons_info = [
+            ("ALTER TABLE", self.open_alter_table, 0, 0),
+            ("Расширенный SELECT", self.open_advanced_select, 0, 1),
+            ("Поиск по тексту", self.open_text_search, 0, 2),
+            ("Функции строк", self.open_string_functions, 1, 0),
+            ("JOIN мастер", self.open_join_wizard, 1, 1)
+        ]
+
+        for text, slot, row, col in advanced_buttons_info:
+            btn = QPushButton(text)
+            btn.setObjectName("primary")
+            btn.clicked.connect(slot)
+            btn.setMinimumHeight(50)
+            btn.setMinimumWidth(160)
+            grid_layout2.addWidget(btn, row, col)
+
+        layout.addLayout(grid_layout2)
 
         self.status_label = QLabel("Статус: Не подключено к БД")
         self.status_label.setAlignment(Qt.AlignCenter)
@@ -96,7 +125,6 @@ class MainWindow(QMainWindow):
             elif data_type == 'employee':
                 self.add_employee()
             elif data_type == 'product':
-                self.add_product()
                 self.add_product()
             elif data_type == 'finances': 
                 self.add_finance()
@@ -272,3 +300,38 @@ class MainWindow(QMainWindow):
                     QMessageBox.warning(self, "Ошибка", "ID точки и сумма должны быть числами")
             else:
                 QMessageBox.warning(self, "Ошибка", "Поля с * обязательны для заполнения")
+
+    def open_alter_table(self):
+        if not self.db_manager.is_connected():
+            QMessageBox.warning(self, "Ошибка", "Сначала подключитесь к базе данных")
+            return
+        dialog = AlterTableDialog(self.db_manager, self)
+        dialog.exec()
+
+    def open_advanced_select(self):
+        if not self.db_manager.is_connected():
+            QMessageBox.warning(self, "Ошибка", "Сначала подключитесь к базе данных")
+            return
+        dialog = AdvancedSelectDialog(self.db_manager, self)
+        dialog.exec()
+
+    def open_text_search(self):
+        if not self.db_manager.is_connected():
+            QMessageBox.warning(self, "Ошибка", "Сначала подключитесь к базе данных")
+            return
+        dialog = TextSearchDialog(self.db_manager, self)
+        dialog.exec()
+
+    def open_string_functions(self):
+        if not self.db_manager.is_connected():
+            QMessageBox.warning(self, "Ошибка", "Сначала подключитесь к базе данных")
+            return
+        dialog = StringFunctionsDialog(self.db_manager, self)
+        dialog.exec()
+
+    def open_join_wizard(self):
+        if not self.db_manager.is_connected():
+            QMessageBox.warning(self, "Ошибка", "Сначала подключитесь к базе данных")
+            return
+        dialog = JoinWizardDialog(self.db_manager, self)
+        dialog.exec()

@@ -189,7 +189,38 @@ class DataViewDialog(QDialog):
         self.setMinimumSize(900, 700)
         self.setup_ui()
         self.load_data()
+        # В класс DataViewDialog добавить:
+    def __init__(self, db_manager, parent=None):
+        super().__init__(parent)
+        self.db_manager = db_manager
+        self.setWindowTitle("Просмотр данных")
+        self.setMinimumSize(900, 700)
+        self.setup_ui()
+        self.check_structure_changes()  # Проверяем изменения при открытии
+        self.load_data()
 
+    def check_structure_changes(self):
+        """Проверить и уведомить об изменениях структуры"""
+        if self.db_manager.has_structure_changed():
+            reply = QMessageBox.question(self, "Обновление структуры", 
+                                    "Структура базы данных была изменена. Хотите обновить данные?",
+                                    QMessageBox.Yes | QMessageBox.No)
+            if reply == QMessageBox.Yes:
+                self.refresh_table_structure()
+            self.db_manager.clear_structure_changed()
+    # В dialogs.py в классе DataViewDialog добавить метод:
+    def refresh_table_structure(self):
+        """Обновить структуру таблиц после изменений ALTER TABLE"""
+        try:
+            # Принудительно обновляем соединение
+            self.db_manager.refresh_connection()
+            
+            # Перезагружаем данные для всех вкладок
+            self.load_data()
+            
+        except Exception as e:
+            logging.error(f"Ошибка обновления структуры таблиц: {str(e)}")
+            QMessageBox.warning(self, "Ошибка", f"Не удалось обновить структуру таблиц: {str(e)}")
     def setup_ui(self):
         layout = QVBoxLayout()
 
@@ -206,6 +237,9 @@ class DataViewDialog(QDialog):
         self.tabs.addTab(self.finances_tab, "Финансы")
 
         layout.addWidget(self.tabs)
+        refresh_structure_btn = QPushButton("Обновить структуру таблиц")  # НОВАЯ КНОПКА
+        refresh_structure_btn.clicked.connect(self.refresh_table_structure)
+        refresh_structure_btn.setToolTip("Обновить структуру таблиц после изменений ALTER TABLE")
         
         refresh_btn = QPushButton("Обновить данные")
         refresh_btn.clicked.connect(self.load_data)
@@ -628,7 +662,7 @@ class RecreateTablesDialog(QDialog):
         layout.addWidget(label)
 
         self.sample_data_btn = QPushButton("Вставить тестовые данные")
-        self.recreate_btn = QPushButton("Пересоздать таблицы")
+        self.recreate_btn = QPushButton("3 таблицы")
 
         self.sample_data_btn.clicked.connect(lambda: self.accept_with_action('sample_data'))
         self.recreate_btn.clicked.connect(lambda: self.accept_with_action('recreate'))
