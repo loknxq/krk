@@ -460,7 +460,7 @@ class AdvancedSelectDialog(QDialog):
         add_group_btn.clicked.connect(self.add_group_by)
         add_agg_btn = QPushButton('Добавить агрегат')
         add_agg_btn.clicked.connect(self.add_aggregate)
-        remove_group_btn = QPushButton('Удалить GROUP BY/Агрегат')
+        remove_group_btn = QPushButton('Удалить')
         remove_group_btn.clicked.connect(self.remove_selected_group_or_agg)
         clear_group_btn = QPushButton('Очистить')
         clear_group_btn.clicked.connect(self.clear_group_by)
@@ -919,20 +919,118 @@ class AdvancedSelectDialog(QDialog):
 
     def add_group_by(self):
         dlg = QDialog(self)
-        dlg.setWindowTitle('Добавить столбец в GROUP BY')
-        layout = QFormLayout(dlg)
-        cb = QComboBox()
-        cb.addItems([f"{t}.{c}" for t in self.schema for c in self.schema[t]])
-        add_btn = QPushButton('Добавить')
+        dlg.setWindowTitle("GROUP BY")
+        dlg.resize(500, 450)
+        
+        layout = QVBoxLayout(dlg)
+        
+        # Выбор типа группировки
+        type_layout = QFormLayout()
+        type_cb = QComboBox()
+        type_cb.addItems(["Обычная группировка", "ROLLUP", "CUBE", "GROUPING SETS"])
+        type_layout.addRow("Тип группировки:", type_cb)
+        layout.addLayout(type_layout)
+        
+        # Список для выбора столбцов
+        layout.addWidget(QLabel("Выберите столбцы для группировки:"))
+        columns_list = QListWidget()
+        columns_list.setSelectionMode(QListWidget.MultiSelection)
+        
+        # Заполняем список доступными столбцами
+        for t in sorted(self.schema.keys()):
+            for c in self.schema[t]:
+                columns_list.addItem(f"{t}.{c}")
+        
+        layout.addWidget(columns_list)
+        
+        # Информация о выбранном типе
+        info_label = QLabel()
+        info_label.setWordWrap(True)
+        info_label.setStyleSheet("color: #555; padding: 10px; background-color: #f0f0f0; border-radius: 5px;")
+        layout.addWidget(info_label)
+        
+        def update_info():
+            selected_type = type_cb.currentText()
+            if selected_type == "ROLLUP":
+                info_label.setText(
+                    " ROLLUP создает иерархические подитоги.\n"
+                    "Например, для (отдел, должность) создаст группировки:\n"
+                    "• (отдел, должность) - детальная группировка\n"
+                    "• (отдел) - промежуточный итог по отделу\n"
+                    "• () - общий итог"
+                )
+            elif selected_type == "CUBE":
+                info_label.setText(
+                    " CUBE создает все возможные комбинации группировок.\n"
+                    "Например, для (регион, категория) создаст:\n"
+                    "• (регион, категория)\n"
+                    "• (регион)\n"
+                    "• (категория)\n"
+                    "• () - общий итог"
+                )
+            elif selected_type == "GROUPING SETS":
+                info_label.setText(
+                    " GROUPING SETS позволяет указать конкретные комбинации.\n"
+                    "Каждый выбранный столбец будет отдельной группировкой.\n"
+                    "Используется для создания специфических наборов группировок."
+                )
+            else:
+                info_label.setText(
+                    " Стандартная группировка по выбранным столбцам.\n"
+                    "Все выбранные столбцы будут использованы в GROUP BY."
+                )
+        
+        type_cb.currentIndexChanged.connect(update_info)
+        update_info()
+        
+ 
+        btn_layout = QHBoxLayout()
+        add_btn = QPushButton("Добавить")
+        cancel_btn = QPushButton("Отмена")
+        
         add_btn.clicked.connect(dlg.accept)
-        layout.addRow(cb)
-        layout.addRow(add_btn)
+        cancel_btn.clicked.connect(dlg.reject)
+        
+        btn_layout.addStretch()
+        btn_layout.addWidget(add_btn)
+        btn_layout.addWidget(cancel_btn)
+        layout.addLayout(btn_layout)
+        
         if dlg.exec():
-            val = cb.currentText()
-            if val:
-                self.group_by.append(val)
-                self.group_list.addItem(val)
-                self.update_sql_preview()
+            selected_items = columns_list.selectedItems()
+            if not selected_items:
+                QMessageBox.warning(self, "Внимание", "Выберите хотя бы один столбец.")
+                return
+            
+            selected_cols = [item.text() for item in selected_items]
+            group_type = type_cb.currentText()
+            
+            if group_type == "Обычная группировка":
+                for col in selected_cols:
+                    self.groupby.append(col)
+                    self.grouplist.addItem(col)
+            
+            elif group_type == "ROLLUP":
+                cols_str = ", ".join(selected_cols)
+                rollup_expr = f"ROLLUP({cols_str})"
+                self.groupby.append(rollup_expr)
+                self.grouplist.addItem(f"📊 ROLLUP: {cols_str}")
+            
+            elif group_type == "CUBE":
+                cols_str = ", ".join(selected_cols)
+                cube_expr = f"CUBE({cols_str})"
+                self.groupby.append(cube_expr)
+                self.grouplist.addItem(f"🧊 CUBE: {cols_str}")
+            
+            elif group_type == "GROUPING SETS":
+                sets_parts = [f"({col})" for col in selected_cols]
+                sets_str = ", ".join(sets_parts)
+                grouping_sets_expr = f"GROUPING SETS({sets_str})"
+                self.groupby.append(grouping_sets_expr)
+                self.grouplist.addItem(f"🎯 GROUPING SETS: {', '.join(selected_cols)}")
+            
+            self.updatesqlpreview()
+
 
     def remove_selected_group_or_agg(self):
         row = self.group_list.currentRow()
@@ -964,25 +1062,50 @@ class AdvancedSelectDialog(QDialog):
         dlg = QDialog(self)
         dlg.setWindowTitle('Добавить агрегат')
         layout = QFormLayout(dlg)
+        
         col_cb = QComboBox()
         col_cb.addItems([f"{t}.{c}" for t in self.schema for c in self.schema[t]])
+        
         agg_cb = QComboBox()
-        agg_cb.addItems(['COUNT', 'SUM', 'AVG', 'MIN', 'MAX'])
+        agg_cb.addItems(['COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'GROUPING'])
+        
         alias_le = QLineEdit()
+        
+        info_label = QLabel()
+        info_label.setWordWrap(True)
+        info_label.setStyleSheet("color: gray; font-size: 9pt;")
+        
+        def update_info():
+            if agg_cb.currentText() == 'GROUPING':
+                info_label.setText(
+                    "GROUPING() возвращает 1 для итоговых строк и 0 для обычных. "
+                    "Используется с ROLLUP, CUBE или GROUPING SETS."
+                )
+            else:
+                info_label.setText("")
+        
+        agg_cb.currentIndexChanged.connect(update_info)
+        update_info()
+        
         add_btn = QPushButton('Добавить')
         add_btn.clicked.connect(dlg.accept)
-        layout.addRow('Столбец', col_cb)
-        layout.addRow('Функция', agg_cb)
-        layout.addRow('Псевдоним', alias_le)
+        
+        layout.addRow('Столбец:', col_cb)
+        layout.addRow('Функция:', agg_cb)
+        layout.addRow('Псевдоним:', alias_le)
+        layout.addRow(info_label)
         layout.addRow(add_btn)
+        
         if dlg.exec():
             fn = agg_cb.currentText()
             col = col_cb.currentText()
             alias = alias_le.text() or f"{fn.lower()}_{col.replace('.', '_')}"
+            
             if col:
                 self.aggregates.append((fn, col, alias))
                 self.group_list.addItem(f"{fn}({col}) AS {alias}")
                 self.update_sql_preview()
+
 
     def add_having(self):
         if not self.group_by and not self.aggregates:
@@ -1311,3 +1434,103 @@ class AdvancedSelectDialog(QDialog):
         self.result_table.setColumnCount(0)
         self.sql_preview.clear()
         self.update_sql_preview()
+    def addgroupby(self):
+        dlg = QDialog(self)
+        dlg.setWindowTitle("GROUP BY")
+        dlg.resize(500, 400)
+        
+        layout = QVBoxLayout(dlg)
+        
+        # Выбор типа группировки
+        type_layout = QFormLayout()
+        type_cb = QComboBox()
+        type_cb.addItems(["Обычная группировка", "ROLLUP", "CUBE", "GROUPING SETS"])
+        type_layout.addRow("Тип группировки:", type_cb)
+        layout.addLayout(type_layout)
+        
+        # Список для выбора столбцов
+        layout.addWidget(QLabel("Выберите столбцы для группировки:"))
+        columns_list = QListWidget()
+        columns_list.setSelectionMode(QListWidget.MultiSelection)
+        
+        # Заполняем список доступными столбцами
+        for t in sorted(self.schema.keys()):
+            for c in self.schema[t]:
+                columns_list.addItem(f"{t}.{c}")
+        
+        layout.addWidget(columns_list)
+        
+        # Информация о выбранном типе
+        info_label = QLabel()
+        info_label.setWordWrap(True)
+        layout.addWidget(info_label)
+        
+        def update_info():
+            selected_type = type_cb.currentText()
+            if selected_type == "ROLLUP":
+                info_label.setText(
+                    "ROLLUP создает иерархические подитоги. "
+                    "Например, для (a, b, c) создаст группировки: (a,b,c), (a,b), (a), ()."
+                )
+            elif selected_type == "CUBE":
+                info_label.setText(
+                    "CUBE создает все возможные комбинации группировок. "
+                    "Например, для (a, b) создаст: (a,b), (a), (b), ()."
+                )
+            elif selected_type == "GROUPING SETS":
+                info_label.setText(
+                    "GROUPING SETS позволяет указать конкретные комбинации группировок. "
+                    "Каждый выбранный столбец будет отдельной группировкой."
+                )
+            else:
+                info_label.setText("Стандартная группировка по выбранным столбцам.")
+        
+        type_cb.currentIndexChanged.connect(update_info)
+        update_info()
+        
+        btn_layout = QHBoxLayout()
+        add_btn = QPushButton("Добавить")
+        cancel_btn = QPushButton("Отмена")
+        
+        add_btn.clicked.connect(dlg.accept)
+        cancel_btn.clicked.connect(dlg.reject)
+        
+        btn_layout.addStretch()
+        btn_layout.addWidget(add_btn)
+        btn_layout.addWidget(cancel_btn)
+        layout.addLayout(btn_layout)
+        
+        if dlg.exec():
+            selected_items = columns_list.selectedItems()
+            if not selected_items:
+                QMessageBox.warning(self, "Внимание", "Выберите хотя бы один столбец.")
+                return
+            
+            selected_cols = [item.text() for item in selected_items]
+            group_type = type_cb.currentText()
+            
+            if group_type == "Обычная группировка":
+                for col in selected_cols:
+                    self.groupby.append(col)
+                    self.grouplist.addItem(col)
+            
+            elif group_type == "ROLLUP":
+                cols_str = ", ".join(selected_cols)
+                rollup_expr = f"ROLLUP({cols_str})"
+                self.groupby.append(rollup_expr)
+                self.grouplist.addItem(f"ROLLUP: {cols_str}")
+            
+            elif group_type == "CUBE":
+                cols_str = ", ".join(selected_cols)
+                cube_expr = f"CUBE({cols_str})"
+                self.groupby.append(cube_expr)
+                self.grouplist.addItem(f"CUBE: {cols_str}")
+            
+            elif group_type == "GROUPING SETS":
+                sets_parts = [f"({col})" for col in selected_cols]
+                sets_str = ", ".join(sets_parts)
+                grouping_sets_expr = f"GROUPING SETS({sets_str})"
+                self.groupby.append(grouping_sets_expr)
+                self.grouplist.addItem(f"GROUPING SETS: {', '.join(selected_cols)}")
+            
+            self.updatesqlpreview()

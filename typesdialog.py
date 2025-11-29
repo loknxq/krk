@@ -283,7 +283,7 @@ class UserTypesDialog(QDialog):
         self.create_btn = QPushButton("Создать")
         self.view_btn = QPushButton("Просмотр")
         self.delete_btn = QPushButton("Удалить")
-        # заменяем Refresh на Apply
+     
         self.apply_btn = QPushButton("Применить")
         ops_row.addWidget(self.create_btn)
         ops_row.addWidget(self.view_btn)

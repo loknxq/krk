@@ -934,7 +934,6 @@ class AddDataDialog(QDialog):
         self.build_fields_for_table(table_name)
 
     def build_fields_for_table(self, table_name: str):
-        # clear previous fields
         while self.form_layout.rowCount():
             self.form_layout.removeRow(0)
         self.field_widgets.clear()
@@ -960,13 +959,13 @@ class AddDataDialog(QDialog):
 
             data_type = (meta.get('data_type') or "").lower()
             udt = (meta.get('udt_name') or "").lower()
-            enum_values = meta.get('enum_values')  # optional list of string values
+            enum_values = meta.get('enum_values')  
 
             widget = None
 
             if enum_values and isinstance(enum_values, (list, tuple)) and len(enum_values) > 0:
                 cb = QComboBox()
-                cb.addItem("")  # allow empty selection => NULL
+                cb.addItem("") 
                 for v in enum_values:
                     cb.addItem(str(v))
                 widget = cb
@@ -974,7 +973,7 @@ class AddDataDialog(QDialog):
             elif data_type in ("integer", "smallint", "bigint") or udt in ("int2", "int4", "int8"):
                 sb = QSpinBox()
                 sb.setRange(-2147483648, 2147483647)
-                sb.setSpecialValueText("")  # special value -> empty shown
+                sb.setSpecialValueText("") 
                 sb.setValue(0)
                 widget = sb
 

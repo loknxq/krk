@@ -628,3 +628,152 @@ LINE 1: ALTER TABLE employees ALTER COLUMN  SET NOT NULL
 2025-11-29 07:18:22,912 - INFO - Успешное подключение к БД
 2025-11-29 07:19:50,393 - INFO - Приложение 'Крошка Картошка' запущено
 2025-11-29 07:19:54,897 - INFO - Успешное подключение к БД
+2025-11-29 08:32:12,438 - INFO - Приложение 'Крошка Картошка' запущено
+2025-11-29 08:32:21,897 - INFO - Успешное подключение к БД
+2025-11-29 08:39:14,702 - INFO - Приложение 'Крошка Картошка' запущено
+2025-11-29 08:39:20,506 - INFO - Успешное подключение к БД
+2025-11-29 08:40:44,110 - INFO - Приложение 'Крошка Картошка' запущено
+2025-11-29 08:40:54,845 - INFO - Успешное подключение к БД
+2025-11-29 08:47:13,909 - ERROR - Ошибка выполнения запроса через DBManager.execute: ОШИБКА:  таблица "points" отсутствует в предложении FROM
+LINE 3: GROUP BY points.point_id
+                 ^
+
+SQL: SELECT transactions.type, transactions.amount, transactions.date
+FROM transactions
+GROUP BY points.point_id
+2025-11-29 08:47:20,388 - ERROR - Ошибка проверки подключения: ОШИБКА:  текущая транзакция прервана, команды до конца блока транзакции игнорируются
+
+2025-11-29 08:47:20,499 - INFO - Успешное подключение к БД
+2025-11-29 08:47:20,505 - ERROR - Ошибка выполнения запроса через DBManager.execute: ОШИБКА:  таблица "points" отсутствует в предложении FROM
+LINE 3: GROUP BY points.point_id
+                 ^
+
+SQL: SELECT transactions.type, transactions.amount, transactions.date
+FROM transactions
+GROUP BY points.point_id
+2025-11-29 08:48:46,671 - ERROR - Ошибка проверки подключения: ОШИБКА:  текущая транзакция прервана, команды до конца блока транзакции игнорируются
+
+2025-11-29 08:48:46,772 - INFO - Успешное подключение к БД
+2025-11-29 08:49:12,728 - ERROR - Ошибка выполнения запроса через DBManager.execute: ОШИБКА:  столбец "transactions.type" должен фигурировать в предложении GROUP BY или использоваться в агрегатной функции
+LINE 1: SELECT transactions.type, transactions.amount, points.point_...
+               ^
+
+SQL: SELECT transactions.type, transactions.amount, points.point_id
+FROM points, transactions
+GROUP BY points.point_id
+2025-11-29 08:49:35,464 - ERROR - Ошибка проверки подключения: ОШИБКА:  текущая транзакция прервана, команды до конца блока транзакции игнорируются
+
+2025-11-29 08:49:35,570 - INFO - Успешное подключение к БД
+2025-11-29 08:51:07,332 - ERROR - load_views failed: 'DatabaseManager' object has no attribute 'executesql'
+Traceback (most recent call last):
+  File "d:\krk4\viewsdialog.py", line 76, in load_views
+    cur = self.dbmanager.executesql(sql)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'DatabaseManager' object has no attribute 'executesql'. Did you mean: 'execute'?
+2025-11-29 08:52:51,349 - INFO - Приложение 'Крошка Картошка' запущено
+2025-11-29 08:53:04,573 - INFO - Успешное подключение к БД
+2025-11-29 08:54:07,343 - ERROR - load_views failed: 'DatabaseManager' object has no attribute 'executesql'
+Traceback (most recent call last):
+  File "d:\krk4\viewsdialog.py", line 76, in load_views
+    cur = self.dbmanager.executesql(sql)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'DatabaseManager' object has no attribute 'executesql'. Did you mean: 'execute'?
+2025-11-29 08:54:52,047 - INFO - Отключение от БД
+2025-11-29 08:54:52,146 - INFO - Успешное подключение к БД
+2025-11-29 08:54:53,936 - INFO - Отключение от БД
+2025-11-29 08:54:54,047 - INFO - Успешное подключение к БД
+2025-11-29 13:24:54,331 - INFO - Приложение 'Крошка Картошка' запущено
+2025-11-29 13:35:58,158 - INFO - Успешное подключение к БД
+2025-11-29 13:38:34,134 - INFO - Приложение 'Крошка Картошка' запущено
+2025-11-29 13:38:39,843 - INFO - Успешное подключение к БД
+2025-11-29 13:57:46,329 - ERROR - load_views failed: 'DatabaseManager' object has no attribute 'executesql'
+Traceback (most recent call last):
+  File "d:\krk4\viewsdialog.py", line 76, in load_views
+    cur = self.dbmanager.executesql(sql)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'DatabaseManager' object has no attribute 'executesql'. Did you mean: 'execute'?
+2025-11-29 13:59:17,846 - ERROR - load_views failed: 'DatabaseManager' object has no attribute 'executesql'
+Traceback (most recent call last):
+  File "d:\krk4\viewsdialog.py", line 76, in load_views
+    cur = self.dbmanager.executesql(sql)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'DatabaseManager' object has no attribute 'executesql'. Did you mean: 'execute'?
+2025-11-29 14:03:47,507 - INFO - Приложение 'Крошка Картошка' запущено
+2025-11-29 14:03:54,728 - INFO - Успешное подключение к БД
+2025-11-29 14:04:22,699 - ERROR - Ошибка выполнения запроса через DBManager.execute: ОШИБКА:  "_pg_foreign_data_wrappers" - это не таблица и не материализованное представление
+
+SQL: REFRESH MATERIALIZED VIEW information_schema._pg_foreign_data_wrappers
+2025-11-29 14:04:49,806 - ERROR - Ошибка выполнения запроса через DBManager.execute: ОШИБКА:  "views" - это не таблица и не материализованное представление
+
+SQL: REFRESH MATERIALIZED VIEW information_schema.views
+2025-11-29 14:05:21,455 - ERROR - Ошибка выполнения запроса через DBManager.execute: ОШИБКА:  "attributes" - это не таблица и не материализованное представление
+
+SQL: REFRESH MATERIALIZED VIEW information_schema.attributes
+2025-11-29 14:21:59,551 - INFO - Приложение 'Крошка Картошка' запущено
+2025-11-29 14:22:03,261 - INFO - Успешное подключение к БД
+2025-11-29 14:22:05,396 - ERROR - load_views failed: 'ViewsDialog' object has no attribute 'normal_btn'
+Traceback (most recent call last):
+  File "d:\krk4\viewsdialog.py", line 66, in load_views
+    if self.normal_btn.isChecked():
+       ^^^^^^^^^^^^^^^
+AttributeError: 'ViewsDialog' object has no attribute 'normal_btn'
+2025-11-29 14:26:32,479 - INFO - Приложение 'Крошка Картошка' запущено
+2025-11-29 14:29:24,097 - INFO - Приложение 'Крошка Картошка' запущено
+2025-11-29 14:29:26,156 - INFO - Успешное подключение к БД
+2025-11-29 14:36:01,260 - INFO - Приложение 'Крошка Картошка' запущено
+2025-11-29 14:36:07,870 - INFO - Успешное подключение к БД
+2025-11-29 14:39:22,334 - INFO - Приложение 'Крошка Картошка' запущено
+2025-11-29 14:39:25,235 - INFO - Успешное подключение к БД
+2025-11-29 14:40:01,390 - INFO - Приложение 'Крошка Картошка' запущено
+2025-11-29 14:40:04,525 - INFO - Успешное подключение к БД
+2025-11-29 14:40:33,911 - ERROR - Ошибка выполнения запроса через DBManager.execute: ОШИБКА:  ошибка синтаксиса (примерное положение: "1")
+LINE 1: CREATE MATERIALIZED VIEW 1 AS
+                                 ^
+
+SQL: CREATE MATERIALIZED VIEW 1 AS
+SELECT employees.employee_id, employees.full_name, employees.position, employees.salary
+FROM employees
+2025-11-29 14:41:23,041 - ERROR - Ошибка выполнения запроса через DBManager.execute: ОШИБКА:  ошибка синтаксиса (примерное положение: "2")
+LINE 1: CREATE MATERIALIZED VIEW 2 AS
+                                 ^
+
+SQL: CREATE MATERIALIZED VIEW 2 AS
+SELECT products.product_id, products.category, products.name
+FROM products
+2025-11-29 14:43:48,503 - ERROR - Ошибка выполнения запроса через DBManager.execute: ОШИБКА:  отношение "employees" уже существует
+
+SQL: CREATE MATERIALIZED VIEW "employees" AS
+SELECT employees.employee_id, employees.full_name, employees.position, employees.salary
+FROM employees
+2025-11-29 14:44:35,123 - ERROR - Ошибка выполнения запроса через DBManager.execute: ОШИБКА:  ошибка синтаксиса (примерное положение: "VIEW")
+LINE 1: SELECT * FROM public.ere (MATERIALIZED VIEW) LIMIT 200
+                                               ^
+
+SQL: SELECT * FROM public.ere (MATERIALIZED VIEW) LIMIT 200
+2025-11-29 14:44:39,465 - ERROR - Ошибка проверки подключения: ОШИБКА:  текущая транзакция прервана, команды до конца блока транзакции игнорируются
+
+2025-11-29 14:44:39,588 - INFO - Успешное подключение к БД
+2025-11-29 14:44:39,594 - ERROR - Ошибка выполнения запроса через DBManager.execute: ОШИБКА:  ошибка синтаксиса (примерное положение: "VIEW")
+LINE 1: SELECT * FROM public.ere (MATERIALIZED VIEW) LIMIT 200
+                                               ^
+
+SQL: SELECT * FROM public.ere (MATERIALIZED VIEW) LIMIT 200
+2025-11-29 14:47:12,770 - INFO - Приложение 'Крошка Картошка' запущено
+2025-11-29 14:47:15,259 - INFO - Успешное подключение к БД
+2025-11-29 14:56:18,941 - INFO - Приложение 'Крошка Картошка' запущено
+2025-11-29 14:56:23,570 - INFO - Успешное подключение к БД
+2025-11-29 14:57:43,020 - ERROR - Ошибка выполнения запроса через DBManager.execute: ОШИБКА:  таблица "products" отсутствует в предложении FROM
+LINE 1: SELECT SUM(products.selling_price) AS "w"
+                   ^
+
+SQL: SELECT SUM(products.selling_price) AS "w"
+FROM employees
+2025-11-29 15:02:17,430 - INFO - Приложение 'Крошка Картошка' запущено
+2025-11-29 15:02:20,370 - INFO - Успешное подключение к БД
+2025-11-29 15:06:19,421 - INFO - Приложение 'Крошка Картошка' запущено
+2025-11-29 15:06:27,477 - INFO - Успешное подключение к БД
+2025-11-29 15:06:57,660 - INFO - Приложение 'Крошка Картошка' запущено
+2025-11-29 15:07:31,828 - INFO - Приложение 'Крошка Картошка' запущено
+2025-11-29 15:07:34,275 - INFO - Приложение 'Крошка Картошка' запущено
+2025-11-29 15:07:43,334 - INFO - Приложение 'Крошка Картошка' запущено
+2025-11-29 15:07:46,238 - INFO - Успешное подключение к БД

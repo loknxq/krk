@@ -14,6 +14,9 @@ from advanced_features import ( TextSearchDialog,
 from select import AdvancedSelectDialog
 from alter import AlterTableDialog
 from typesdialog import UserTypesDialog
+from viewsdialog import ViewsDialog
+from cte_builder import CteBuilderDialog
+
 
 
 class MainWindow(QMainWindow):
@@ -71,14 +74,16 @@ class MainWindow(QMainWindow):
         grid_layout2.setSpacing(10)
         grid_layout2.setContentsMargins(20, 10, 20, 20)
 
-        advanced_buttons_info = [
+        advancedbuttonsinfo = [
             ("ALTER TABLE", self.open_alter_table, 0, 0),
-            ("Расширенный SELECT", self.open_advanced_select, 0, 1),
-            ("Поиск по тексту", self.open_text_search, 0, 2),
-            ("Функции строк", self.open_string_functions, 1, 0)
+            ("SELECT", self.open_advanced_select, 0, 1),
+            ("VIEWS", self.openviews, 0, 2),
+            ("CTE", self.opencte, 1, 0),
+            ("Текстовый поиск", self.open_text_search, 1, 1),
+            ("Строковые функции", self.open_string_functions, 1, 2),
         ]
 
-        for text, slot, row, col in advanced_buttons_info:
+        for text, slot, row, col in advancedbuttonsinfo:
             btn = QPushButton(text)
             btn.setObjectName("primary")
             btn.clicked.connect(slot)
@@ -340,3 +345,17 @@ class MainWindow(QMainWindow):
             return
         dialog = StringFunctionsDialog(self.db_manager, self)
         dialog.exec()
+    def openviews(self):
+        if not self.db_manager.is_connected():
+            QMessageBox.warning(self, "Нет подключения", "Сначала подключитесь к базе данных.")
+            return
+        dialog = ViewsDialog(self.db_manager, self)
+        dialog.exec()
+
+    def opencte(self):
+        if not self.db_manager.is_connected():
+            QMessageBox.warning(self, "Нет подключения", "Сначала подключитесь к базе данных.")
+            return
+        dialog = CteBuilderDialog(self.db_manager, self)
+        dialog.exec()
+

@@ -1254,7 +1254,6 @@ class DatabaseManager:
                             cur.execute(f'ALTER TABLE "{table}" DROP CONSTRAINT "{chk["name"]}" CASCADE')
                         except Exception:
                             logging.debug("Не удалось удалить CHECK %s", chk.get('name'))
-                    # drop DEFAULT / NOT NULL if present
                     if not meta.get('is_nullable', True):
                         try:
                             cur.execute(f'ALTER TABLE "{table}" ALTER COLUMN "{column}" DROP NOT NULL')
