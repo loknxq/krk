@@ -1,3 +1,5 @@
+import logging
+
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QMessageBox, QGridLayout, QDialog, QTextEdit)
 from PySide6.QtCore import Qt
@@ -6,10 +8,13 @@ from PySide6.QtGui import QFont
 from database import DatabaseManager
 from dialogs import ConnectionDialog,AddFinanceDialog,  EditFinanceDialog, LoggerDialog, DataViewDialog, AddDataDialog, AddPointDialog, AddEmployeeDialog, AddProductDialog
 from styles import STYLES
-from advanced_features import (
-    AlterTableDialog, AdvancedSelectDialog, TextSearchDialog, 
-    StringFunctionsDialog, JoinWizardDialog
+from advanced_features import ( TextSearchDialog,
+    StringFunctionsDialog
 )
+from select import AdvancedSelectDialog
+from alter import AlterTableDialog
+from typesdialog import UserTypesDialog
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -47,8 +52,8 @@ class MainWindow(QMainWindow):
             ("Подключение к БД", self.show_connection_dialog, 0, 1),
             ("Добавить данные", self.show_add_data, 1, 0),
             ("Просмотр данных", self.show_view_data, 1, 1),
-            ("Статистика", self.refresh_all, 2, 0),
-            ("О программе", self.show_about, 2, 1)
+            ("О программе", self.show_about, 2, 1),
+            ("Пользовательские типы", self.show_types_data, 2,0)
         ]
 
         for text, slot, row, col in buttons_info1:
@@ -70,8 +75,7 @@ class MainWindow(QMainWindow):
             ("ALTER TABLE", self.open_alter_table, 0, 0),
             ("Расширенный SELECT", self.open_advanced_select, 0, 1),
             ("Поиск по тексту", self.open_text_search, 0, 2),
-            ("Функции строк", self.open_string_functions, 1, 0),
-            ("JOIN мастер", self.open_join_wizard, 1, 1)
+            ("Функции строк", self.open_string_functions, 1, 0)
         ]
 
         for text, slot, row, col in advanced_buttons_info:
@@ -126,7 +130,7 @@ class MainWindow(QMainWindow):
                 self.add_employee()
             elif data_type == 'product':
                 self.add_product()
-            elif data_type == 'finances': 
+            elif data_type == 'finances':
                 self.add_finance()
 
     def show_view_data(self):
@@ -135,6 +139,14 @@ class MainWindow(QMainWindow):
             return
         
         dialog = DataViewDialog(self.db_manager, self)
+        dialog.exec()
+
+    def show_types_data(self):
+        if not self.db_manager.is_connected():
+            QMessageBox.warning(self, "Ошибка", "Сначала подключитесь к базе данных")
+            return
+
+        dialog = UserTypesDialog(self.db_manager, self)
         dialog.exec()
 
     def refresh_all(self):
@@ -327,11 +339,4 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Ошибка", "Сначала подключитесь к базе данных")
             return
         dialog = StringFunctionsDialog(self.db_manager, self)
-        dialog.exec()
-
-    def open_join_wizard(self):
-        if not self.db_manager.is_connected():
-            QMessageBox.warning(self, "Ошибка", "Сначала подключитесь к базе данных")
-            return
-        dialog = JoinWizardDialog(self.db_manager, self)
         dialog.exec()
