@@ -619,3 +619,12 @@ LINE 1: ALTER TABLE employees ALTER COLUMN  SET NOT NULL
 2025-11-27 09:27:27,764 - INFO - Успешное подключение к БД
 2025-11-27 09:28:29,962 - INFO - Таблицы успешно пересозданы
 2025-11-27 09:28:33,849 - INFO - Тестовые данные добавлены
+2025-11-29 07:17:41,352 - INFO - Приложение 'Крошка Картошка' запущено
+2025-11-29 07:17:48,639 - ERROR - Ошибка подключения к БД: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-11-29 07:18:00,931 - ERROR - Ошибка подключения к БД: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-11-29 07:18:02,420 - ERROR - Ошибка подключения к БД: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-11-29 07:18:05,343 - ERROR - Ошибка подключения к БД: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-11-29 07:18:06,576 - ERROR - Ошибка подключения к БД: 'utf-8' codec can't decode byte 0xc2 in position 61: invalid continuation byte
+2025-11-29 07:18:22,912 - INFO - Успешное подключение к БД
+2025-11-29 07:19:50,393 - INFO - Приложение 'Крошка Картошка' запущено
+2025-11-29 07:19:54,897 - INFO - Успешное подключение к БД

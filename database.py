@@ -13,9 +13,9 @@ class DatabaseManager:
     def __init__(self):
         self.connection = None
         self.connection_params = {
-            'dbname': 'subo',
+            'dbname': 'postgres',
             'user': 'postgres',
-            'password': "postgres",
+            'password': "020306",
             'host': 'localhost',
             'port': '5432'
         }
